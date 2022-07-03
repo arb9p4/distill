@@ -63,19 +63,19 @@
     <div id="box1" class="l-body"></div>
 	  <div id="box1-sliders" style="margin-bottom: 50px;">
       <div>
-        <span style="margin: 15px;">x_min</span><d-slider id="box1-x_min" style="width: 200px;"></d-slider>
-        <span style="margin: 15px;">x_max</span><d-slider id="box1-x_max" style="width: 200px;"></d-slider>
+        <span style="margin: 15px;">x_min</span><input type="range" id="box1-x_min" style="width: 200px;" />
+        <span style="margin: 15px;">x_max</span><input type="range" id="box1-x_max" style="width: 200px;" />
       </div>
       <div>
-        <span style="margin: 15px;">y_min</span><d-slider id="box1-y_min" style="width: 200px;"></d-slider>
-        <span style="margin: 15px;">y_max</span><d-slider id="box1-y_max" style="width: 200px;"></d-slider>
+        <span style="margin: 15px;">y_min</span><input type="range" id="box1-y_min" style="width: 200px;" />
+        <span style="margin: 15px;">y_max</span><input type="range" id="box1-y_max" style="width: 200px;" />
       </div>
       <div>
-        <span style="margin: 15px;">z_min</span><d-slider id="box1-z_min" style="width: 200px;"></d-slider>
-        <span style="margin: 15px;">z_max</span><d-slider id="box1-z_max" style="width: 200px;"></d-slider>
+        <span style="margin: 15px;">z_min</span><input type="range" id="box1-z_min" style="width: 200px;" />
+        <span style="margin: 15px;">z_max</span><input type="range" id="box1-z_max" style="width: 200px;" />
       </div>
     </div>
-    
+
 
     <p>Phasellus in dui eget massa euismod egestas. Nulla nunc ex, rutrum non mi ut, auctor cursus felis. Sed laoreet mauris sit amet auctor porta. Maecenas ex turpis, pellentesque eu justo quis, dignissim volutpat lorem. Curabitur facilisis lacinia dui aliquet lobortis. Sed maximus purus vel porta auctor. Nam ut diam justo. Aliquam nec ex sit amet nunc pretium sodales ac euismod arcu. Nunc et leo sit amet elit maximus rutrum. Pellentesque non laoreet ipsum, vel cursus nisi. Vivamus mi nisi, faucibus ut neque non, aliquet iaculis massa. Sed faucibus odio eu magna pretium, at eleifend arcu lacinia. Mauris laoreet leo quis nulla laoreet rutrum. Vivamus posuere justo risus, molestie elementum metus dapibus eget. Donec eleifend tempus dolor consequat accumsan.</p>
 
@@ -123,44 +123,6 @@
         hoverinfo: 'none'
       };
 
-      const layout = {
-        hovermode: false,
-        scene: {
-          aspectmode: 'manual',
-          aspectratio: {
-            x: 1, y: 1, z: 1,
-          },
-          camera: {
-            projection: {
-              type: "orthographic"
-            }
-          },
-          xaxis: {
-            range: [0, 10],
-            showspikes: false,
-            tick0: 0,
-            dtick: 2
-          },
-          yaxis: {
-            range: [0, 10],
-            showspikes: false,
-            tick0: 0,
-            dtick: 2
-          },
-          zaxis: {
-            range: [0, 10],
-            showspikes: false,
-            tick0: 0,
-            dtick: 2
-          }
-        }
-      };
-
-      const config = {
-        displayModeBar: false,
-        scrollZoom: false
-      };
-
 			Plotly.react(fig, [data], layout, config);
 
     }
@@ -174,10 +136,66 @@
       z_max: 6
     };
 
+    const [x, y, z] = box_to_lines(box1);
+
+    const data = {
+      type: 'scatter3d',
+      mode: 'lines',
+      x: x,
+      y: y,
+      z: z,
+      line: {
+        color: 'red'
+      },
+      hoverinfo: 'none'
+    };
+
+    const layout = {
+      hovermode: false,
+      scene: {
+        aspectmode: 'manual',
+        aspectratio: {
+          x: 1, y: 1, z: 1,
+        },
+        camera: {
+          projection: {
+            type: "orthographic"
+          }
+        },
+        xaxis: {
+          range: [0, 10],
+          showspikes: false,
+          tick0: 0,
+          dtick: 2
+        },
+        yaxis: {
+          range: [0, 10],
+          showspikes: false,
+          tick0: 0,
+          dtick: 2
+        },
+        zaxis: {
+          range: [0, 10],
+          showspikes: false,
+          tick0: 0,
+          dtick: 2
+        }
+      }
+    };
+
+    const config = {
+      displayModeBar: false,
+      scrollZoom: false
+    };
+
     update_box('box1', box1);
 
     document.querySelector('#box1-x_min').value = box1.x_min * 10;
     document.querySelector('#box1-x_max').value = box1.x_max * 10;
+    document.querySelector('#box1-y_min').value = box1.y_min * 10;
+    document.querySelector('#box1-y_max').value = box1.y_max * 10;
+    document.querySelector('#box1-z_min').value = box1.z_min * 10;
+    document.querySelector('#box1-z_max').value = box1.z_max * 10;
 
 	
 		document.querySelector('#box1-x_min').addEventListener('input', (event) => {
