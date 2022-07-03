@@ -17,23 +17,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta charset="utf8">
 
-  <!-- Import maps polyfill -->
-  <!-- Remove this when import maps will be widely supported -->
-  <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
-
-  <script type="importmap">
-  {
-      "imports": {
-      "three": "./js/three.module.js"
-      }
-  }
-  </script>
-
-  <script type="module" src="multi.js"></script>
-  <!-- <script type="module" src="figs.js"></script> -->
 
   <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'></script>
+
+  <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'></script> -->
 
   
 
@@ -69,307 +56,159 @@
     }
   }</script>
   </d-front-matter>
-  <d-title>
-    <figure style="grid-column: page; margin: 1rem 0;"><img src="momentum.png"
-        style="width:100%; border: 1px solid rgba(0, 0, 0, 0.2);" /></figure>
-    <p>We often think of Momentum<d-cite key="mercier2011humans"></d-cite> as a means of dampening oscillations and
-      speeding up the iterations, leading to faster convergence. But it has other interesting behavior. It allows a
-      larger range of step-sizes to be used, and creates its own oscillations. What is going on?</p>
-  </d-title>
-  <d-byline></d-byline>
   <d-article>
-    <a class="marker" href="#section-1" id="section-1"><span>1</span></a>
-    <h2>A Brief Survey of Techniques</h2>
-    <p>Before diving in: if you haven’t encountered t-SNE before, here’s what you need to know about the math behind it.
-      The goal is to take a set of points in a high-dimensional space and find a faithful representation of those points
-      in a lower-dimensional space, typically the 2D plane. The algorithm is non-linear and adapts to the underlying
-      data, performing different transformations on different regions. Those differences can be a major source of
-      confusion.</p>
+    
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas pharetra lacus et purus feugiat volutpat. Vivamus eu nibh tempor, fringilla lacus ut, imperdiet dolor. Nam ac lorem sapien. Phasellus vulputate nunc a dapibus eleifend. Nam ac nisi ac sapien consequat finibus quis quis sem. Ut feugiat dictum ligula sed lacinia. Donec aliquet, dui non malesuada euismod, nunc magna interdum quam, eu finibus libero neque sed urna. Nullam imperdiet massa nec felis semper tempor. Fusce sed lacus risus. Suspendisse et elit sit amet ipsum vulputate suscipit. Curabitur venenatis ullamcorper neque, a vulputate orci lacinia eget. Nam ullamcorper semper tortor nec posuere. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae;</p>
 
-    <span data-diagram="box" class="l-body" style="height: 300px"></span>
+    <div id="box1" class="l-body"></div>
+	  <div id="box1-sliders" style="margin-bottom: 50px;">
+      <div>
+        <span style="margin: 15px;">x_min</span><d-slider id="box1-x_min" style="width: 200px;"></d-slider>
+        <span style="margin: 15px;">x_max</span><d-slider id="box1-x_max" style="width: 200px;"></d-slider>
+      </div>
+      <div>
+        <span style="margin: 15px;">y_min</span><d-slider id="box1-y_min" style="width: 200px;"></d-slider>
+        <span style="margin: 15px;">y_max</span><d-slider id="box1-y_max" style="width: 200px;"></d-slider>
+      </div>
+      <div>
+        <span style="margin: 15px;">z_min</span><d-slider id="box1-z_min" style="width: 200px;"></d-slider>
+        <span style="margin: 15px;">z_max</span><d-slider id="box1-z_max" style="width: 200px;"></d-slider>
+      </div>
+    </div>
+    
 
-    <p>This is the first paragraph of the article. Test a long&thinsp;&mdash;&thinsp;dash -- here it is.</p>
-
-    <span data-diagram="pyramid" class="l-body" style="height: 300px"></span>
-
-    <p>This is another paragraph.</p>
-
-    <!-- <span id="fig1" class="'l-body" style="height: 300px"></span> -->
-    <div id="gd"></div>
-		<d-slider id="gd-x" style="width: 200px;"></d-slider>
-
-    <p>Test for owner's possessive. Test for "quoting a passage." And another sentence. Or two. Some flopping fins; for
-      diving.</p>
-    <aside>Some text in an aside, margin notes, etc...</aside>
-    <p>Here's a test of an inline equation <d-math>c = a^2 + b^2</d-math>. Also with configurable katex standards just
-      using inline '$' signs: $$x^2$$ And then there's a block equation:</p>
-    <d-math block>
-      c = \pm \sqrt{ \sum_{i=0}^{n}{a^{222} + b^2}}
-    </d-math>
-    <p>Math can also be quite involved:</p>
-    <d-math block>
-      \frac{1}{\Bigl(\sqrt{\phi \sqrt{5}}-\phi\Bigr) e^{\frac25 \pi}} = 1+\frac{e^{-2\pi}} {1+\frac{e^{-4\pi}}
-      {1+\frac{e^{-6\pi}} {1+\frac{e^{-8\pi}} {1+\cdots} } } }
-    </d-math>
-    <a class="marker" href="#section-1.1" id="section-1.1"><span>1.1</span></a>
-    <h3>Citations</h3>
-    <p>
-      <d-slider style="width: 200px;"></d-slider>
-    </p>
-    <p>We can<d-cite bibtex-key="mercier2011humans"></d-cite> also cite <d-cite
-        key="gregor2015draw,mercier2011humans,openai2018charter"></d-cite> external publications. <d-cite
-        key="dong2014image,dumoulin2016guide,mordvintsev2015inceptionism"></d-cite>. We should also be testing footnotes
-      <d-footnote>This will become a hoverable footnote. This will become a hoverable footnote. This will become a
-        hoverable footnote. This will become a hoverable footnote. This will become a hoverable footnote. This will
-        become a hoverable footnote. This will become a hoverable footnote. This will become a hoverable footnote.
-      </d-footnote>. There are multiple footnotes, and they appear in the appendix<d-footnote>Given I have coded them
-        right. Also, here's math in a footnote: <d-math>c = \sum_0^i{x}</d-math>. Also, a citation. Box-ception<d-cite
-          key='gregor2015draw'></d-cite>!</d-footnote> as well.</p>
-    <a class="marker" href="#section-2" id="section-2"><span>2</span></a>
-    <h2>Displaying code snippets</h2>
-    <p>Some inline javascript:<d-code language="javascript">var x = 25;</d-code>. And here's a javascript code block.
-    </p>
-    <d-code block language="javascript">
-      var x = 25;
-      function(x){
-      return x * x;
-      }
-    </d-code>
-    <p>We also support python.</p>
-    <d-code block language="python">
-      # Python 3: Fibonacci series up to n
-      def fib(n):
-      a, b = 0, 1
-      while a < n: print(a, end=' ' ) a, b=b, a+b </d-code>
-        <p>And a table</p>
-        <table>
-          <thead>
-            <tr>
-              <th>First</th>
-              <th>Second</th>
-              <th>Third</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>23</td>
-              <td>654</td>
-              <td>23</td>
-            </tr>
-            <tr>
-              <td>14</td>
-              <td>54</td>
-              <td>34</td>
-            </tr>
-            <tr>
-              <td>234</td>
-              <td>54</td>
-              <td>23</td>
-            </tr>
-          </tbody>
-        </table>
-        <d-figure id="last-figure"></d-figure>
-        <script>
-          const figure = document.querySelector("d-figure#last-figure");
-          const initTag = document.createElement("span");
-          initTag.textContent = "initialized!"
-          figure.appendChild(initTag);
-          figure.addEventListener("ready", function () {
-            const initTag = figure.querySelector("span");
-            initTag.textContent = "ready"
-            console.log('ready')
-          });
-          figure.addEventListener("onscreen", function () {
-            const initTag = figure.querySelector("span");
-            initTag.textContent = "onscreen"
-            console.log('onscreen')
-          });
-          figure.addEventListener("offscreen", function () {
-            const initTag = figure.querySelector("span");
-            initTag.textContent = "offscreen!"
-            console.log('offscreen')
-          });
-        </script>
-        <p>That's it for the example article!</p>
+    <p>Phasellus in dui eget massa euismod egestas. Nulla nunc ex, rutrum non mi ut, auctor cursus felis. Sed laoreet mauris sit amet auctor porta. Maecenas ex turpis, pellentesque eu justo quis, dignissim volutpat lorem. Curabitur facilisis lacinia dui aliquet lobortis. Sed maximus purus vel porta auctor. Nam ut diam justo. Aliquam nec ex sit amet nunc pretium sodales ac euismod arcu. Nunc et leo sit amet elit maximus rutrum. Pellentesque non laoreet ipsum, vel cursus nisi. Vivamus mi nisi, faucibus ut neque non, aliquet iaculis massa. Sed faucibus odio eu magna pretium, at eleifend arcu lacinia. Mauris laoreet leo quis nulla laoreet rutrum. Vivamus posuere justo risus, molestie elementum metus dapibus eget. Donec eleifend tempus dolor consequat accumsan.</p>
 
   </d-article>
 
   <d-appendix>
 
-    <h3>Contributions</h3>
-    <p>Some text describing who did what.</p>
-    <h3>Reviewers</h3>
-    <p>Some text with links describing who reviewed the article.</p>
-
-    <d-bibliography src="bibliography.bib"></d-bibliography>
+    <!-- <d-bibliography src="bibliography.bib"></d-bibliography> -->
   </d-appendix>
 
   <!-- <distill-footer></distill-footer> -->
 
   <script>
-      // Plotly.newPlot("gd", /* JSON object */ {
-      //     "data": [{ "y": [1, 2, 3] }],
-      //     "layout": { "width": 600, "height": 400},
-      //     displayModeBar: false
-      // })
+      
+    function box_to_lines(box) {
 
+      const x_min = box.x_min,
+            x_max = box.x_max,
+            y_min = box.y_min,
+            y_max = box.y_max,
+            z_min = box.z_min,
+            z_max = box.z_max
 
-      // var trace1 = {
-      //     x:['Zebras', 'Lions', 'Pelicans'],
-      //     y: [90, 40, 60],
-      //     type: 'bar',
-      //     name: 'New York Zoo'
-      // };
+      const x = [x_min, x_min, x_max, x_max, x_min, x_min, x_min, x_min, x_min, x_max, x_max, x_max, x_max, x_max, x_max, x_min],
+            y = [y_min, y_max, y_max, y_min, y_min, y_min, y_max, y_max, y_max, y_max, y_max, y_max, y_min, y_min, y_min, y_min],
+            z = [z_min, z_min, z_min, z_min, z_min, z_max, z_max, z_min, z_max, z_max, z_min, z_max, z_max, z_min, z_max, z_max];
 
-      // var trace2 = {
-      //     x:['Zebras', 'Lions', 'Pelicans'],
-      //     y: [10, 80, 45],
-      //     type: 'bar',
-      //     name: 'San Francisco Zoo'
-      // };
+      return [x, y, z];
 
-      // var data = [trace1, trace2];
+    }
 
-      // var layout = {
-      //     title: 'Hide the Modebar',
-      //     showlegend: true
-      // };
+    function update_box(fig, box) {
 
-      // Plotly.newPlot('gd', data, layout, {displayModeBar: false});
+      const [x, y, z] = box_to_lines(box);
 
-
-      // d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/3d-scatter.csv', function(err, rows){
-      // function unpack(rows, key) {
-      //   return rows.map(function(row)
-      //   { return row[key]; });}
-
-      // var trace1 = {
-      //   x:unpack(rows, 'x1'), y: unpack(rows, 'y1'), z: unpack(rows, 'z1'),
-      //   mode: 'markers',
-      //   marker: {
-      //     size: 12,
-      //     line: {
-      //     color: 'rgba(217, 217, 217, 0.14)',
-      //     width: 0.5},
-      //     opacity: 0.8},
-      //   type: 'scatter3d'
-      // };
-
-      // var trace2 = {
-      //   x:unpack(rows, 'x2'), y: unpack(rows, 'y2'), z: unpack(rows, 'z2'),
-      //   mode: 'markers',
-      //   marker: {
-      //     color: 'rgb(127, 127, 127)',
-      //     size: 12,
-      //     symbol: 'circle',
-      //     line: {
-      //     color: 'rgb(204, 204, 204)',
-      //     width: 1},
-      //     opacity: 0.8},
-      //   type: 'scatter3d'};
-
-      // var data = [trace1, trace2];
-      // var layout = {margin: {
-      //   l: 0,
-      //   r: 0,
-      //   b: 0,
-      //   t: 0
-      //   }};
-      // Plotly.newPlot('gd', data, layout);
-      // });
-
-
-    // var intensity = [0, 0.14285714285714285, 0.2857142857142857, 0.42857142857142855, 0.5714285714285714, 0.7142857142857143, 0.8571428571428571, 1];
-
-    // var data = [{
-    //     type: "mesh3d",
-    //     x: [0, 0, 1, 1, 0, 0, 1, 1],
-    //     y: [0, 1, 1, 0, 0, 1, 1, 0],
-    //     z: [0, 0, 0, 0, 1, 1, 1, 1],
-    //     i: [7, 0, 0, 0, 4, 4, 6, 6, 4, 0, 3, 2],
-    //     j: [3, 4, 1, 2, 5, 6, 5, 2, 0, 1, 6, 3],
-    //     k: [0, 7, 2, 3, 6, 7, 1, 1, 5, 5, 7, 6],
-    //     intensity: intensity,
-    //     colorscale: [
-    //       [0, 'rgb(255, 0, 255)'],
-    //       [0.5, 'rgb(0, 255, 0)'],
-    //       [1, 'rgb(0, 0, 255)']
-    //     ]
-    //   }
-    // ];
-
-    // Plotly.newPlot('gd', data, {});
-
-		var x_min = 1;
-		var x_max = 2;
-		var y_min = 3;
-		var y_max = 4;
-		var z_min = 5;
-		var z_max = 6;
-
-		var x = [0, 0, x_max, x_max, 0, 0, 0, 0, 0, x_max, x_max, x_max, x_max, x_max, x_max, 0];
-		var y = [0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0];
-		var z = [0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1];
-
-		var data = {
-			
-			type: 'scatter3d',
-			mode: 'lines',
-			x: x,
-			y: y,
-			z: z,
-			line: {
-				color: 'red'
-			}
-		
-		};
-
-		var layout = {
-			hovermode: false,
-			scene:{
-				aspectmode: "manual",
-				aspectratio: {
-					x: 1, y: 1, z: 1,
-					},
-				xaxis: {
-					range: [-2, 7],
-				},
-				yaxis: {
-					range: [-2, 2],
-				},
-				zaxis: {
-				range: [-2, 2],
-				}}
-		};
-
-		var config = {displayModeBar: false, scrollZoom: false};
-
-		Plotly.newPlot('gd', [data], layout, config);
-
-	
-		document.querySelector('#gd-x').addEventListener('input', (event) => {
-			// console.log(event.target.value);
-
-			x_max = event.target.value / 20;
-		
-			console.log(x_max);
-			x = [0, 0, x_max, x_max, 0, 0, 0, 0, 0, x_max, x_max, x_max, x_max, x_max, x_max, 0];
-			y = [0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0];
-			z = [0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1];
-
-			data = {
+			const data = {
 				type: 'scatter3d',
 				mode: 'lines',
 				x: x,
 				y: y,
 				z: z,
-				line: {color: 'red'}
-			}
+        line: {
+          color: 'red'
+        },
+        hoverinfo: 'none'
+      };
 
-			Plotly.react('gd', [data], layout, config);
+      const layout = {
+        hovermode: false,
+        scene: {
+          aspectmode: 'manual',
+          aspectratio: {
+            x: 1, y: 1, z: 1,
+          },
+          camera: {
+            projection: {
+              type: "orthographic"
+            }
+          },
+          xaxis: {
+            range: [0, 10],
+            showspikes: false,
+            tick0: 0,
+            dtick: 2
+          },
+          yaxis: {
+            range: [0, 10],
+            showspikes: false,
+            tick0: 0,
+            dtick: 2
+          },
+          zaxis: {
+            range: [0, 10],
+            showspikes: false,
+            tick0: 0,
+            dtick: 2
+          }
+        }
+      };
 
+      const config = {
+        displayModeBar: false,
+        scrollZoom: false
+      };
+
+			Plotly.react(fig, [data], layout, config);
+
+    }
+
+    let box1 = {
+      x_min: 1,
+      x_max: 2,
+      y_min: 3,
+      y_max: 4,
+      z_min: 5,
+      z_max: 6
+    };
+
+    update_box('box1', box1);
+
+    document.querySelector('#box1-x_min').value = box1.x_min * 10;
+    document.querySelector('#box1-x_max').value = box1.x_max * 10;
+
+	
+		document.querySelector('#box1-x_min').addEventListener('input', (event) => {
+			box1.x_min = event.target.value / 10;
+      update_box('box1', box1);
 		});
 
+    document.querySelector('#box1-x_max').addEventListener('input', (event) => {
+			box1.x_max = event.target.value / 10;
+      update_box('box1', box1);
+		});
+
+    document.querySelector('#box1-y_min').addEventListener('input', (event) => {
+			box1.y_min = event.target.value / 10;
+      update_box('box1', box1);
+		});
+
+    document.querySelector('#box1-y_max').addEventListener('input', (event) => {
+			box1.y_max = event.target.value / 10;
+      update_box('box1', box1);
+		});
+    
+    document.querySelector('#box1-z_min').addEventListener('input', (event) => {
+			box1.z_min = event.target.value / 10;
+      update_box('box1', box1);
+		});
+
+    document.querySelector('#box1-z_max').addEventListener('input', (event) => {
+			box1.z_max = event.target.value / 10;
+      update_box('box1', box1);
+		});
 
   </script>
 

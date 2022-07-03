@@ -1,0 +1,414 @@
+<!--
+  Copyright 2018 The Distill Template Authors
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+       http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!doctype html>
+
+<head>
+  <script src="template.v2.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf8">
+
+  <!-- Import maps polyfill -->
+  <!-- Remove this when import maps will be widely supported -->
+  <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+  <script type="importmap">
+  {
+      "imports": {
+      "three": "./js/three.module.js"
+      }
+  }
+  </script>
+
+  <script type="module" src="multi.js"></script>
+  <!-- <script type="module" src="figs.js"></script> -->
+
+  <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'></script>
+
+  
+
+</head>
+
+<body>
+  <!-- <distill-header></distill-header> -->
+  <d-front-matter>
+    <script id='distill-front-matter' type="text/json">{
+    "title": "Exploring Relative Position Descriptors",
+    "description": "Although \" extremely useful for visualizing high-dimensional data, t-SNE plots can sometimes be mysterious or misleading.",
+    "published": "June 29, 2022",
+    "authors": [
+      {
+        "author":"Andrew Buck",
+        "authorURL":"https://andrew-buck.com/",
+        "affiliations": [{"name": "University of Missouri", "url": "https://missouri.edu"}]
+      },
+      {
+        "author":"Derek Anderson",
+        "authorURL":"https://derektanderson.com/",
+        "affiliations": [{"name": "University of Missouri", "url": "https://missouri.edu"}]
+      },
+      {
+        "author":"James Keller",
+        "affiliations": [{"name": "University of Missouri", "url": "https://missouri.edu"}]
+      }
+    ],
+    "katex": {
+      "delimiters": [
+        {"left": "$$", "right": "$$", "display": false}
+      ]
+    }
+  }</script>
+  </d-front-matter>
+  <d-title>
+    <figure style="grid-column: page; margin: 1rem 0;"><img src="momentum.png"
+        style="width:100%; border: 1px solid rgba(0, 0, 0, 0.2);" /></figure>
+    <p>We often think of Momentum<d-cite key="mercier2011humans"></d-cite> as a means of dampening oscillations and
+      speeding up the iterations, leading to faster convergence. But it has other interesting behavior. It allows a
+      larger range of step-sizes to be used, and creates its own oscillations. What is going on?</p>
+  </d-title>
+  <d-byline></d-byline>
+  <d-article>
+    <a class="marker" href="#section-1" id="section-1"><span>1</span></a>
+    <h2>A Brief Survey of Techniques</h2>
+    <p>Before diving in: if you haven’t encountered t-SNE before, here’s what you need to know about the math behind it.
+      The goal is to take a set of points in a high-dimensional space and find a faithful representation of those points
+      in a lower-dimensional space, typically the 2D plane. The algorithm is non-linear and adapts to the underlying
+      data, performing different transformations on different regions. Those differences can be a major source of
+      confusion.</p>
+
+    <span data-diagram="box" class="l-body" style="height: 300px"></span>
+
+    <p>This is the first paragraph of the article. Test a long&thinsp;&mdash;&thinsp;dash -- here it is.</p>
+
+    <span data-diagram="pyramid" class="l-body" style="height: 300px"></span>
+
+    <p>This is another paragraph.</p>
+
+    <div id="threejsfigs"></div>
+
+    <!-- <span id="fig1" class="'l-body" style="height: 300px"></span> -->
+    <div id="gd"></div>
+		<d-slider id="gd-x" style="width: 200px;"></d-slider>
+
+    <div id="figs3d"></div>
+
+    <p>Test for owner's possessive. Test for "quoting a passage." And another sentence. Or two. Some flopping fins; for
+      diving.</p>
+    <aside>Some text in an aside, margin notes, etc...</aside>
+    <p>Here's a test of an inline equation <d-math>c = a^2 + b^2</d-math>. Also with configurable katex standards just
+      using inline '$' signs: $$x^2$$ And then there's a block equation:</p>
+    <d-math block>
+      c = \pm \sqrt{ \sum_{i=0}^{n}{a^{222} + b^2}}
+    </d-math>
+    <p>Math can also be quite involved:</p>
+    <d-math block>
+      \frac{1}{\Bigl(\sqrt{\phi \sqrt{5}}-\phi\Bigr) e^{\frac25 \pi}} = 1+\frac{e^{-2\pi}} {1+\frac{e^{-4\pi}}
+      {1+\frac{e^{-6\pi}} {1+\frac{e^{-8\pi}} {1+\cdots} } } }
+    </d-math>
+    <a class="marker" href="#section-1.1" id="section-1.1"><span>1.1</span></a>
+    <h3>Citations</h3>
+    <p>
+      <d-slider style="width: 200px;"></d-slider>
+    </p>
+    <p>We can<d-cite bibtex-key="mercier2011humans"></d-cite> also cite <d-cite
+        key="gregor2015draw,mercier2011humans,openai2018charter"></d-cite> external publications. <d-cite
+        key="dong2014image,dumoulin2016guide,mordvintsev2015inceptionism"></d-cite>. We should also be testing footnotes
+      <d-footnote>This will become a hoverable footnote. This will become a hoverable footnote. This will become a
+        hoverable footnote. This will become a hoverable footnote. This will become a hoverable footnote. This will
+        become a hoverable footnote. This will become a hoverable footnote. This will become a hoverable footnote.
+      </d-footnote>. There are multiple footnotes, and they appear in the appendix<d-footnote>Given I have coded them
+        right. Also, here's math in a footnote: <d-math>c = \sum_0^i{x}</d-math>. Also, a citation. Box-ception<d-cite
+          key='gregor2015draw'></d-cite>!</d-footnote> as well.</p>
+    <a class="marker" href="#section-2" id="section-2"><span>2</span></a>
+    <h2>Displaying code snippets</h2>
+    <p>Some inline javascript:<d-code language="javascript">var x = 25;</d-code>. And here's a javascript code block.
+    </p>
+    <d-code block language="javascript">
+      var x = 25;
+      function(x){
+      return x * x;
+      }
+    </d-code>
+    <p>We also support python.</p>
+    <d-code block language="python">
+      # Python 3: Fibonacci series up to n
+      def fib(n):
+      a, b = 0, 1
+      while a < n: print(a, end=' ' ) a, b=b, a+b </d-code>
+        <p>And a table</p>
+        <table>
+          <thead>
+            <tr>
+              <th>First</th>
+              <th>Second</th>
+              <th>Third</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>23</td>
+              <td>654</td>
+              <td>23</td>
+            </tr>
+            <tr>
+              <td>14</td>
+              <td>54</td>
+              <td>34</td>
+            </tr>
+            <tr>
+              <td>234</td>
+              <td>54</td>
+              <td>23</td>
+            </tr>
+          </tbody>
+        </table>
+        <d-figure id="last-figure"></d-figure>
+        <script>
+          const figure = document.querySelector("d-figure#last-figure");
+          const initTag = document.createElement("span");
+          initTag.textContent = "initialized!"
+          figure.appendChild(initTag);
+          figure.addEventListener("ready", function () {
+            const initTag = figure.querySelector("span");
+            initTag.textContent = "ready"
+            console.log('ready')
+          });
+          figure.addEventListener("onscreen", function () {
+            const initTag = figure.querySelector("span");
+            initTag.textContent = "onscreen"
+            console.log('onscreen')
+          });
+          figure.addEventListener("offscreen", function () {
+            const initTag = figure.querySelector("span");
+            initTag.textContent = "offscreen!"
+            console.log('offscreen')
+          });
+        </script>
+        <p>That's it for the example article!</p>
+
+  </d-article>
+
+  <d-appendix>
+
+    <h3>Contributions</h3>
+    <p>Some text describing who did what.</p>
+    <h3>Reviewers</h3>
+    <p>Some text with links describing who reviewed the article.</p>
+
+    <d-bibliography src="bibliography.bib"></d-bibliography>
+  </d-appendix>
+
+  <!-- <distill-footer></distill-footer> -->
+
+  <script>
+      // Plotly.newPlot("gd", /* JSON object */ {
+      //     "data": [{ "y": [1, 2, 3] }],
+      //     "layout": { "width": 600, "height": 400},
+      //     displayModeBar: false
+      // })
+
+
+      // var trace1 = {
+      //     x:['Zebras', 'Lions', 'Pelicans'],
+      //     y: [90, 40, 60],
+      //     type: 'bar',
+      //     name: 'New York Zoo'
+      // };
+
+      // var trace2 = {
+      //     x:['Zebras', 'Lions', 'Pelicans'],
+      //     y: [10, 80, 45],
+      //     type: 'bar',
+      //     name: 'San Francisco Zoo'
+      // };
+
+      // var data = [trace1, trace2];
+
+      // var layout = {
+      //     title: 'Hide the Modebar',
+      //     showlegend: true
+      // };
+
+      // Plotly.newPlot('gd', data, layout, {displayModeBar: false});
+
+
+      // d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/3d-scatter.csv', function(err, rows){
+      // function unpack(rows, key) {
+      //   return rows.map(function(row)
+      //   { return row[key]; });}
+
+      // var trace1 = {
+      //   x:unpack(rows, 'x1'), y: unpack(rows, 'y1'), z: unpack(rows, 'z1'),
+      //   mode: 'markers',
+      //   marker: {
+      //     size: 12,
+      //     line: {
+      //     color: 'rgba(217, 217, 217, 0.14)',
+      //     width: 0.5},
+      //     opacity: 0.8},
+      //   type: 'scatter3d'
+      // };
+
+      // var trace2 = {
+      //   x:unpack(rows, 'x2'), y: unpack(rows, 'y2'), z: unpack(rows, 'z2'),
+      //   mode: 'markers',
+      //   marker: {
+      //     color: 'rgb(127, 127, 127)',
+      //     size: 12,
+      //     symbol: 'circle',
+      //     line: {
+      //     color: 'rgb(204, 204, 204)',
+      //     width: 1},
+      //     opacity: 0.8},
+      //   type: 'scatter3d'};
+
+      // var data = [trace1, trace2];
+      // var layout = {margin: {
+      //   l: 0,
+      //   r: 0,
+      //   b: 0,
+      //   t: 0
+      //   }};
+      // Plotly.newPlot('gd', data, layout);
+      // });
+
+
+    // var intensity = [0, 0.14285714285714285, 0.2857142857142857, 0.42857142857142855, 0.5714285714285714, 0.7142857142857143, 0.8571428571428571, 1];
+
+    // var data = [{
+    //     type: "mesh3d",
+    //     x: [0, 0, 1, 1, 0, 0, 1, 1],
+    //     y: [0, 1, 1, 0, 0, 1, 1, 0],
+    //     z: [0, 0, 0, 0, 1, 1, 1, 1],
+    //     i: [7, 0, 0, 0, 4, 4, 6, 6, 4, 0, 3, 2],
+    //     j: [3, 4, 1, 2, 5, 6, 5, 2, 0, 1, 6, 3],
+    //     k: [0, 7, 2, 3, 6, 7, 1, 1, 5, 5, 7, 6],
+    //     intensity: intensity,
+    //     colorscale: [
+    //       [0, 'rgb(255, 0, 255)'],
+    //       [0.5, 'rgb(0, 255, 0)'],
+    //       [1, 'rgb(0, 0, 255)']
+    //     ]
+    //   }
+    // ];
+
+    // Plotly.newPlot('gd', data, {});
+
+		var x_min = 1;
+		var x_max = 2;
+		var y_min = 3;
+		var y_max = 4;
+		var z_min = 5;
+		var z_max = 6;
+
+		var x = [0, 0, x_max, x_max, 0, 0, 0, 0, 0, x_max, x_max, x_max, x_max, x_max, x_max, 0];
+		var y = [0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0];
+		var z = [0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1];
+
+		var data = {
+			
+			type: 'scatter3d',
+			mode: 'lines',
+			x: x,
+			y: y,
+			z: z,
+			line: {
+				color: 'red'
+			},
+      hoverinfo: 'none'
+		
+		};
+
+		var layout = {
+			hovermode: false,
+			scene:{
+				aspectmode: "manual",
+				aspectratio: {
+					x: 1, y: 1, z: 1,
+					},
+        camera: {
+          projection: {
+            type: "orthographic"
+          }
+        },
+				xaxis: {
+					range: [-2, 7],
+          showspikes: false
+				},
+				yaxis: {
+					range: [-2, 2],
+          showspikes: false
+				},
+				zaxis: {
+				  range: [-2, 2],
+          showspikes: false
+				}}
+		};
+
+		var config = {displayModeBar: false, scrollZoom: false};
+
+		Plotly.newPlot('gd', [data], layout, config);
+
+	
+		document.querySelector('#gd-x').addEventListener('input', (event) => {
+			// console.log(event.target.value);
+
+			x_max = event.target.value / 20;
+		
+			console.log(x_max);
+			x = [0, 0, x_max, x_max, 0, 0, 0, 0, 0, x_max, x_max, x_max, x_max, x_max, x_max, 0];
+			y = [0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0];
+			z = [0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1];
+
+			data = {
+				type: 'scatter3d',
+				mode: 'lines',
+				x: x,
+				y: y,
+				z: z,
+				line: {color: 'green'}
+			}
+
+			Plotly.react('gd', [data], layout, config);
+
+		});
+
+    wrapper = document.getElementById("figs3d");
+
+    for (var i=0; i < 5; i++) {
+      id_str = `id_${i}`;
+      g = document.createElement('div');
+      g.setAttribute("id", id_str);
+      // g.setAttribute("style", "height: 300px; width: 300px; margin: 10px; background-color: gray;");
+      wrapper.appendChild(g);
+
+      try {
+        Plotly.newPlot(id_str, [data], layout, config);
+      } catch (error) {
+        console.log(error);
+      }
+        
+
+
+
+      g.on('plotly_webglcontextlost', function(arg) {
+        console.log('context lost...');
+        console.log(arg);
+        // Poltly.purge()
+      })
+    }
+    
+
+  </script>
+
+</body>

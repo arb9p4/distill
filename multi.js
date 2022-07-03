@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import {TrackballControls} from './js/TrackballControls.js';
+import {OrbitControls} from './js/OrbitControls.js';
 
 function main() {
   const canvas = document.createElement('canvas');
-  const renderer = new THREE.WebGLRenderer({canvas, alpha: true});
+  const renderer = new THREE.WebGLRenderer({canvas, alpha: true, antialias: true});
   renderer.setScissorTest(true);
 
   const sceneElements = [];
@@ -28,9 +29,11 @@ function main() {
     const gridHelper = new THREE.GridHelper(10, 10);
     scene.add(gridHelper);
 
-    const controls = new TrackballControls(camera, elem);
+    // const controls = new TrackballControls(camera, elem);
+    const controls = new OrbitControls(camera, elem);
     controls.noZoom = true;
     controls.noPan = true;
+    controls.rotateSpeed = 0.1;
 
     {
       const color = 0xFFFFFF;
@@ -54,7 +57,7 @@ function main() {
         mesh.rotation.y = time * .1;
         camera.aspect = rect.width / rect.height;
         camera.updateProjectionMatrix();
-        controls.handleResize();
+        // controls.handleResize();
         controls.update();
         renderer.render(scene, camera);
       };
@@ -75,7 +78,7 @@ function main() {
         mesh.rotation.y = time * .1;
         camera.aspect = rect.width / rect.height;
         camera.updateProjectionMatrix();
-        controls.handleResize();
+        // controls.handleResize();
         controls.update();
         renderer.render(scene, camera);
       };
@@ -88,6 +91,20 @@ function main() {
     const sceneRenderFunction = sceneInitFunction(elem);
     addScene(elem, sceneRenderFunction);
   });
+
+  wrapper = document.getElementById("threejsfigs");
+
+  for (var i=0; i < 10; i++) {
+    id_str = `threejs_id_${i}`;
+    g = document.createElement('span');
+    g.setAttribute("id", id_str);
+    g.setAttribute("style", "display: inline-block; height: 100px; width: 100px")
+    wrapper.appendChild(g);
+
+    const sceneInitFunction = sceneInitFunctionsByName["box"];
+    const sceneRenderFunction = sceneInitFunction(g);
+    addScene(g, sceneRenderFunction);
+  }
 
   function render(time) {
     time *= 0.001;
