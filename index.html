@@ -21,8 +21,24 @@
   <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
 
   <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'></script> -->
-
+  <script src="https://d3js.org/d3.v7.min.js"></script>
   
+  <!-- <style type="text/css">
+    .svg-container {
+      display: inline-block;
+      position: relative;
+      width: 100%;
+      padding-bottom: 100%;
+      vertical-align: top;
+      overflow: hidden;
+    }
+    .svg-content {
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style> -->
 
 </head>
 
@@ -76,6 +92,7 @@
       </div>
     </div>
 
+    <div id="d3fig" class="svg-container"></div>
 
     <p>Phasellus in dui eget massa euismod egestas. Nulla nunc ex, rutrum non mi ut, auctor cursus felis. Sed laoreet mauris sit amet auctor porta. Maecenas ex turpis, pellentesque eu justo quis, dignissim volutpat lorem. Curabitur facilisis lacinia dui aliquet lobortis. Sed maximus purus vel porta auctor. Nam ut diam justo. Aliquam nec ex sit amet nunc pretium sodales ac euismod arcu. Nunc et leo sit amet elit maximus rutrum. Pellentesque non laoreet ipsum, vel cursus nisi. Vivamus mi nisi, faucibus ut neque non, aliquet iaculis massa. Sed faucibus odio eu magna pretium, at eleifend arcu lacinia. Mauris laoreet leo quis nulla laoreet rutrum. Vivamus posuere justo risus, molestie elementum metus dapibus eget. Donec eleifend tempus dolor consequat accumsan.</p>
 
@@ -228,6 +245,55 @@
       update_box('box1', box1);
 		});
 
+
+
+    // D3
+
+    let width = 600,
+        height = 300,
+        radius = 32;
+
+    let svg = d3.select('div#d3fig')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('stroke-width', 2)
+                .style('background-color', '#EEEEEE');
+    
+    let circles = d3.range(20).map(i => ({
+      x: Math.random() * (width - radius * 2) + radius,
+      y: Math.random() * (height - radius * 2) + radius
+    }))
+
+    function dragstarted(event, d) {
+      d3.select(this).raise().attr("stroke", "black");
+    }
+
+    function dragged(event, d) {
+      d3.select(this).attr("cx", d.x = event.x).attr("cy", d.y = event.y);
+      // console.log(event.x);
+    }
+
+    function dragended(event, d) {
+      d3.select(this).attr("stroke", null);
+    }
+
+    let drag = d3.drag()
+      .on("start", dragstarted)
+      .on("drag", dragged)
+      .on("end", dragended);
+
+    svg.selectAll("circle")
+      .data(circles)
+      .join("circle")
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y)
+        .attr("r", radius)
+        .attr("fill", (d, i) => d3.schemeCategory10[i % 10])
+        .call(drag);
+
+
+      
   </script>
 
 </body>
