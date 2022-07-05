@@ -248,51 +248,79 @@
 
 
     // D3
+    {
 
-    let width = 600,
-        height = 300,
-        radius = 32;
+      let width = 500,
+          height = 200,
+          radius = 12;
+          margin = {
+            top: 20, right: 30, bottom: 30, left: 40
+          };
 
-    let svg = d3.select('div#d3fig')
-                .append('svg')
-                .attr('width', width)
-                .attr('height', height)
-                .attr('stroke-width', 2)
-                .style('background-color', '#EEEEEE');
-    
-    let circles = d3.range(20).map(i => ({
-      x: Math.random() * (width - radius * 2) + radius,
-      y: Math.random() * (height - radius * 2) + radius
-    }))
+      let svg = d3.select('div#d3fig')
+                  .append('svg')
+                  .attr('width', width)
+                  .attr('height', height)
+                  .attr('stroke-width', 2)
+                  .style('background-color', '#EEEEEE');
+      
+      let x = d3.scaleLinear()
+                .domain([0, 1])
+                .range([margin.left, width - margin.right]);
+      
+      let y = d3.scaleLinear()
+                .domain([0, 1])
+                .range([height - margin.bottom, margin.top]);
+      
+      let xAxis = g => g
+          .attr("transform", `translate(0,${height -margin.bottom})`)
+          .call(d3.axisBottom(x)
+                  .ticks(10));
+      
+      let yAxis = g => g
+          .attr("transform", `translate(${margin.left}, 0)`)
+          .call(d3.axisLeft(y)
+                  .ticks(2));
 
-    function dragstarted(event, d) {
-      d3.select(this).raise().attr("stroke", "black");
+      svg.append("g")
+          .call(xAxis);
+      
+      svg.append("g")
+          .call(yAxis);
+
+      let circles = d3.range(2).map(i => ({
+        x: Math.random() * (width - radius * 2) + radius,
+        y: Math.random() * (height - radius * 2) + radius
+      }));
+
+      function dragstarted(event, d) {
+        d3.select(this).raise().attr("stroke", "black");
+      }
+
+      function dragged(event, d) {
+        d3.select(this).attr("cx", d.x = event.x).attr("cy", d.y = event.y);
+        console.log(x.invert(event.x));
+      }
+
+      function dragended(event, d) {
+        d3.select(this).attr("stroke", null);
+      }
+
+      let drag = d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended);
+
+      svg.selectAll("circle")
+        .data(circles)
+        .join("circle")
+          .attr("cx", d => d.x)
+          .attr("cy", d => d.y)
+          .attr("r", radius)
+          .attr("fill", (d, i) => d3.schemeCategory10[i % 10])
+          .call(drag);
+
     }
-
-    function dragged(event, d) {
-      d3.select(this).attr("cx", d.x = event.x).attr("cy", d.y = event.y);
-      // console.log(event.x);
-    }
-
-    function dragended(event, d) {
-      d3.select(this).attr("stroke", null);
-    }
-
-    let drag = d3.drag()
-      .on("start", dragstarted)
-      .on("drag", dragged)
-      .on("end", dragended);
-
-    svg.selectAll("circle")
-      .data(circles)
-      .join("circle")
-        .attr("cx", d => d.x)
-        .attr("cy", d => d.y)
-        .attr("r", radius)
-        .attr("fill", (d, i) => d3.schemeCategory10[i % 10])
-        .call(drag);
-
-
       
   </script>
 
