@@ -114,11 +114,11 @@
 
     }
 
-    function update_box(fig, box) {
+    function update_box(fig, box, layout) {
 
-      const [x, y, z] = box_to_lines(box);
+      let [x, y, z] = box_to_lines(box);
 
-			const data = {
+			let data = {
 				type: 'scatter3d',
 				mode: 'lines',
 				x: x,
@@ -133,6 +133,8 @@
       layout.width = bodyWidth;
       layout.height = Math.min(bodyWidth, 450);
 
+      console.log(layout);
+
 			Plotly.react(fig, [data], layout, config);
 
     }
@@ -146,6 +148,19 @@
       z_max: 6
     };
 
+    let [x, y, z] = box_to_lines(box1);
+
+    let data = {
+      type: 'scatter3d',
+      mode: 'lines',
+      x: x,
+      y: y,
+      z: z,
+      line: {
+        color: 'red'
+      },
+      hoverinfo: 'none'
+    };
 
     let layout = {
       margin: {
@@ -154,10 +169,12 @@
         r: 0,
         t: 0
       },
+      autosize: false,
       width: bodyWidth,
       height: Math.min(bodyWidth, 450),
       paper_bgcolor: '#f4f4f4',
       hovermode: false,
+      uirevision: 'same',
       scene: {
         aspectmode: 'manual',
         aspectratio: {
@@ -171,7 +188,7 @@
             x: 1.25,
             y: -1.25,
             z: 1.25
-          },
+          }
         },
         xaxis: {
           range: [0, 10],
@@ -200,6 +217,7 @@
       responsive: true
     };
 
+    Plotly.newPlot('box1', [data], layout, config);
     // update_box('box1', box1);
 
     document.querySelector('#box1-x_min').value = box1.x_min * 10;
@@ -212,42 +230,42 @@
 	
 		document.querySelector('#box1-x_min').addEventListener('input', (event) => {
 			box1.x_min = event.target.value / 10;
-      update_box('box1', box1);
+      update_box('box1', box1, layout);
 		});
 
     document.querySelector('#box1-x_max').addEventListener('input', (event) => {
 			box1.x_max = event.target.value / 10;
-      update_box('box1', box1);
+      update_box('box1', box1, layout);
 		});
 
     document.querySelector('#box1-y_min').addEventListener('input', (event) => {
 			box1.y_min = event.target.value / 10;
-      update_box('box1', box1);
+      update_box('box1', box1, layout);
 		});
 
     document.querySelector('#box1-y_max').addEventListener('input', (event) => {
 			box1.y_max = event.target.value / 10;
-      update_box('box1', box1);
+      update_box('box1', box1, layout);
 		});
     
     document.querySelector('#box1-z_min').addEventListener('input', (event) => {
 			box1.z_min = event.target.value / 10;
-      update_box('box1', box1);
+      update_box('box1', box1, layout);
 		});
 
     document.querySelector('#box1-z_max').addEventListener('input', (event) => {
 			box1.z_max = event.target.value / 10;
-      update_box('box1', box1);
+      update_box('box1', box1, layout);
 		});
 
 
     var bodyWidth;
 
-    function resize() {
+    function resize(layout) {
       console.log(`width: ${window.innerWidth}, height: ${window.innerHeight}`);
       bodyWidth = document.getElementById('box1').clientWidth;
       console.log(bodyWidth);
-      update_box('box1', box1);
+      update_box('box1', box1, layout);
       drawD3();
     }
 
@@ -319,11 +337,11 @@
         newX = x.invert(event.x);
         if (d.i == 0 && newX >= 0 && newX <= 10) {
           box1.x_min = newX;
-          update_box('box1', box1);
+          update_box('box1', box1, layout);
         }
         if (d.i == 1 && newX >= 0 && newX <= 10) {
           box1.x_max = newX;
-          update_box('box1', box1);
+          update_box('box1', box1, layout);
         }
       }
 
@@ -349,8 +367,8 @@
       
     // drawD3();
 
-    window.onresize = resize;
-    document.onload = resize();
+    window.onresize = resize(layout);
+    document.onload = resize(layout);
 
   </script>
 
