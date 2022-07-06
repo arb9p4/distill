@@ -10,4 +10,6 @@ Handler.extensions_map.update({
 });
 
 httpd = socketserver.TCPServer(("", PORT), Handler)
+
+print(f"Running on http://localhost:{PORT}")
 httpd.serve_forever()
