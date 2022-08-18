@@ -1,0 +1,254 @@
+<html>
+    <head>
+        <style>
+            #fig {
+                margin: 50px;
+                width: 500px;
+            }
+            #fig canvas {
+                border: 1px solid black;
+                height: 500px;
+                image-rendering: pixelated;
+            }
+            #plot {
+                margin: 50px;
+                width: 500px;
+                height: 200px;
+            }
+        </style>
+        <script src="hof.js"></script>
+        <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
+    </head>
+    <body>
+        
+        <div id="fig">
+            <fieldset>
+                <legend>Brush Type:</legend>
+                <input type="radio" name="drawtype" id="A" checked>
+                <label for="A">Object A</label>
+                <input type="radio" name="drawtype" id="B">
+                <label for="B">Object B</label>
+                <input type="radio" name="drawtype" id="C">
+                <label for="C">Clear</label>
+                <input type="button" onclick="update();" value="Update">
+            </fieldset>
+            <canvas id="objects"></canvas>
+        </div>
+        <div id="plot"></div>
+        <script>
+            document.body.style.margin = 0;
+
+            let canvas = document.getElementById("objects");
+            
+            let width = 500;
+            let height = 500;
+
+            canvas.width = width;
+            canvas.height = height;
+            canvas.style.backgroundColor = "#000";
+
+            let context = canvas.getContext("2d");
+            context.lineWidth = 30;
+            context.lineCap = "round";
+            context.imageSmoothingEnabled = false;
+
+            let isMouseDown = false;
+            let previous = { x: 0, y: 0 };
+
+            canvas.addEventListener("mousemove", event => {
+                if (isMouseDown) {
+                    let { offsetX: x, offsetY: y } = event;
+                    
+                    x *= width/canvas.clientWidth;
+                    y *= height/canvas.clientHeight; 
+
+                    let color = "#000";
+                    if( document.getElementById('A').checked ) {
+                        color = "#F00";
+                    }
+                    else if ( document.getElementById('B').checked ) {
+                        color = "#00F";
+                    }
+                    context.strokeStyle = color;
+                    context.beginPath();
+                    
+                    context.moveTo(previous.x, previous.y);
+                    context.lineTo(x, y);
+                    context.stroke();
+
+                    previous = { x, y };
+
+                    // update();
+                }
+            });
+
+            canvas.addEventListener("mousedown", event => {
+                console.log(event);
+                let { offsetX: x, offsetY: y } = event;
+                x *= width/canvas.clientWidth;
+                y *= height/canvas.clientHeight;
+                previous = { x, y };
+
+                isMouseDown = true;
+            });
+
+            canvas.addEventListener("mouseup", event => {
+                isMouseDown = false;
+            });
+
+            
+            function update() {
+                console.log('Update');
+
+                let img = context.getImageData(0, 0, width, height).data;
+
+                let imgA = new Array(width*height);
+                for (let i = 0; i < width*height; i++) {
+                    imgA[i] = img[i*4];
+                }
+
+                let imgB = new Array(width*height);
+                for (let i = 0; i < width*height; i++) {
+                    imgB[i] = img[i*4 + 2];
+                }
+
+                console.log(imgA);
+                console.log(imgB);
+
+                let numberDirections = 180;
+                let typeForce = 0.0;
+                let hist = FRHistogram_CrispRaster(numberDirections, typeForce, imgA, imgB, width, height)
+
+                console.log(hist);
+
+                let xdata = new Array(181);
+                let ydata = new Array(181);
+                for (let i = 0; i < 181; i++) {
+                    xdata[i] = i*2;
+                    ydata[i] = hist[i];
+                }
+
+                var f0 = {
+                    x: xdata,
+                    y: ydata,
+                    type: 'scatter',
+                    mode: 'lines'
+                };
+
+                var layout = {
+                    margin: {
+                        b: 30,
+                        l: 0,
+                        r: 0,
+                        t: 0
+                        },
+                    hovermode: false
+                };
+
+                var config = {
+                    displayModeBar: false,
+                    scrollZoom: false,
+                    responsive: true
+                };
+
+                var data = [f0];
+
+                Plotly.newPlot('plot', data, layout, config);
+
+            }
+            
+
+            function FRHistogram_CrispRaster(numberDirections, typeForce, imageA, imageB, width, height) {
+                let imgAOnHeap;
+                let imgBOnHeap;
+                let histOnHeap;
+                let hist;
+                try {
+                    imgAOnHeap = Module._malloc(imageA.length);
+                    Module.HEAP8.set(imageA, imgAOnHeap);
+
+                    imgBOnHeap = Module._malloc(imageB.length);
+                    Module.HEAP8.set(imageB, imgBOnHeap);
+
+                    histOnHeap = Module._malloc((numberDirections+1) * 8);
+
+                    console.log('calling');
+                    Module._FRHistogram_CrispRaster(histOnHeap, numberDirections, typeForce, imgAOnHeap, imgBOnHeap, width, height);
+                    console.log('done');
+
+                    hist = new Float64Array(Module.HEAPF64.buffer, histOnHeap, numberDirections+1);
+                    
+                    return hist;
+                } finally {
+                    Module._free(imgAOnHeap);
+                    Module._free(imgBOnHeap);
+                    Module._free(histOnHeap);
+                }
+                
+            }
+
+            Module.onRuntimeInitialized = function() {
+                
+                let numberDirections = 180;
+                let histogram = new Float64Array(numberDirections + 1);
+                let typeForce = 0.0;
+                let imageA = new Uint8ClampedArray(10000);
+                let imageB = new Uint8ClampedArray(10000);
+                let width = 100;
+                let height = 100;
+
+                for (let i = 10; i < 20; i++) {
+                    for (let j = 10; j < 20; j++) {
+                        imageA[i*width+j] = 255;
+                    }
+                }
+
+                for (let i = 10; i < 20; i++) {
+                    for (let j = 30; j < 40; j++) {
+                        imageB[i*width+j] = 255;
+                    }
+                }
+                
+                let hist = FRHistogram_CrispRaster(numberDirections, typeForce, imageA, imageB, width, height)
+
+                console.log(hist);
+            }
+
+
+            let xdata = new Array(181);
+            let ydata = new Array(181);
+            for (let i = 0; i < 181; i++) {
+                xdata[i] = i*2;
+                ydata[i] = 0;
+            }
+
+            var f0 = {
+                x: xdata,
+                y: ydata,
+                type: 'scatter',
+                mode: 'lines'
+            };
+
+            var layout = {
+                margin: {
+                    b: 30,
+                    l: 0,
+                    r: 0,
+                    t: 0
+                    },
+                hovermode: false
+            };
+
+            var config = {
+                displayModeBar: false,
+                scrollZoom: false,
+                responsive: true
+            };
+
+            var data = [f0];
+
+            Plotly.newPlot('plot', data, layout, config);
+
+        </script>
+    </body>
+</html>
