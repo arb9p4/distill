@@ -23,9 +23,28 @@
   <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'></script> -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
   
+  <script src="hof.js"></script>
+
   <style type="text/css">
     svg {
       user-select: none;
+    }
+    #fig {
+        margin: 50px;
+        width: 500px;
+    }
+    #fig canvas {
+        border: 1px solid black;
+        height: 400px;
+        image-rendering: pixelated;
+    }
+    #hofplots {
+        margin: 50px;
+        width: 500px;
+    }
+    #hofplots div {
+        height: 200px;
+        margin-bottom: 30px;
     }
   </style>
 
@@ -36,8 +55,6 @@
   <d-front-matter>
     <script id='distill-front-matter' type="text/json">{
     "title": "Exploring Relative Position Descriptors",
-    "description": "Although \" extremely useful for visualizing high-dimensional data, t-SNE plots can sometimes be mysterious or misleading.",
-    "published": "June 29, 2022",
     "authors": [
       {
         "author":"Andrew Buck",
@@ -65,9 +82,38 @@
     
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas pharetra lacus et purus feugiat volutpat. Vivamus eu nibh tempor, fringilla lacus ut, imperdiet dolor. Nam ac lorem sapien. Phasellus vulputate nunc a dapibus eleifend. Nam ac nisi ac sapien consequat finibus quis quis sem. Ut feugiat dictum ligula sed lacinia. Donec aliquet, dui non malesuada euismod, nunc magna interdum quam, eu finibus libero neque sed urna. Nullam imperdiet massa nec felis semper tempor. Fusce sed lacus risus. Suspendisse et elit sit amet ipsum vulputate suscipit. Curabitur venenatis ullamcorper neque, a vulputate orci lacinia eget. Nam ullamcorper semper tortor nec posuere. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae;</p>
 
+    <p>The following is an example of an axis-aligned bounding box (although there is currently no object that is bound). 
+    Click and drag on the 3D axes to move the camera view and drag the control points on the bottom axis to adjust the size of the box.</p>
+
 	  <div id="fig1" class="l-body"></div>
 
     <p>Phasellus in dui eget massa euismod egestas. Nulla nunc ex, rutrum non mi ut, auctor cursus felis. Sed laoreet mauris sit amet auctor porta. Maecenas ex turpis, pellentesque eu justo quis, dignissim volutpat lorem. Curabitur facilisis lacinia dui aliquet lobortis. Sed maximus purus vel porta auctor. Nam ut diam justo. Aliquam nec ex sit amet nunc pretium sodales ac euismod arcu. Nunc et leo sit amet elit maximus rutrum. Pellentesque non laoreet ipsum, vel cursus nisi. Vivamus mi nisi, faucibus ut neque non, aliquet iaculis massa. Sed faucibus odio eu magna pretium, at eleifend arcu lacinia. Mauris laoreet leo quis nulla laoreet rutrum. Vivamus posuere justo risus, molestie elementum metus dapibus eget. Donec eleifend tempus dolor consequat accumsan.</p>
+
+    <p>Below you can explore the Histogram of Forces on an interactive canvas. Use the mouse to draw a red and blue object and
+       observe the resulting force histograms.
+    </p>
+
+    <div id="fig">
+        <fieldset>
+            <legend>Brush Type:</legend>
+            <input type="radio" name="drawtype" id="A" checked>
+            <label for="A">Red</label>
+            <input type="radio" name="drawtype" id="B">
+            <label for="B">Blue</label>
+            <input type="radio" name="drawtype" id="C">
+            <label for="C">Erase</label>
+            <!-- <input type="button" onclick="update();" value="Update"> -->
+        </fieldset>
+        <canvas id="objects"></canvas>
+    </div>
+    <div id="hofplots">
+        <div id="f0plot"></div>
+        <div id="f2plot"></div>
+        <div id="f02plot"></div>
+    </div>
+
+    <p>Sed suscipit eu magna eu convallis. Vivamus semper nisl sit amet quam finibus bibendum. Curabitur nec lobortis felis. Sed odio mi, consequat venenatis tellus non, posuere euismod nunc. Donec semper hendrerit luctus. Cras vitae pharetra mauris. Sed luctus metus nec lectus finibus aliquam. Suspendisse ante urna, accumsan sed dui sed, tristique molestie felis. Ut orci nibh, ullamcorper eu massa at, dictum molestie ipsum. Quisque sed semper massa. Mauris varius sit amet justo sit amet ornare. Nam vitae ex dui. Duis sed ex arcu. Nullam posuere dolor sem, interdum mattis nibh sollicitudin egestas. Nullam mollis elementum euismod.</p>
+
 
   </d-article>
 
@@ -341,6 +387,171 @@
 
     window.onresize = resize;
     document.onload = resize();
+
+
+
+    // HoF
+    {
+      const width = 100;
+      const height = 90;
+      const numberDirections = 64;    // Must be a multiple of 4!
+
+      
+      let canvas = document.getElementById("objects");            
+      canvas.width = width;
+      canvas.height = height;
+      canvas.style.backgroundColor = "#000";
+
+      let context = canvas.getContext("2d");
+      context.lineWidth = 10;
+      context.lineCap = "round";
+      context.imageSmoothingEnabled = false;
+
+      let isMouseDown = false;
+      let previous = { x: 0, y: 0 };
+
+      canvas.addEventListener("mousemove", event => {
+          if (isMouseDown) {
+              let { offsetX: x, offsetY: y } = event;
+              
+              x *= width/canvas.clientWidth;
+              y *= height/canvas.clientHeight; 
+
+              let color = "#000";
+              if( document.getElementById('A').checked ) {
+                  color = "#F00";
+              }
+              else if ( document.getElementById('B').checked ) {
+                  color = "#00F";
+              }
+              context.strokeStyle = color;
+              context.beginPath();
+              
+              context.moveTo(previous.x, previous.y);
+              context.lineTo(x, y);
+              context.stroke();
+
+              previous = { x, y };
+
+              // update();
+          }
+      });
+
+      canvas.addEventListener("mousedown", event => {
+          let { offsetX: x, offsetY: y } = event;
+          x *= width/canvas.clientWidth;
+          y *= height/canvas.clientHeight;
+          previous = { x, y };
+
+          isMouseDown = true;
+      });
+
+      canvas.addEventListener("mouseup", event => {
+          isMouseDown = false;
+          update();
+      });
+
+      
+      function update() {
+
+          // let hist = F0Hist(context, numberDirections);
+
+          let xdata = new Array(numberDirections+1);
+          let f0data = F0Hist(context, numberDirections);
+          let f2data = F2Hist(context, numberDirections);
+          let f02data = F02Hist(context, numberDirections);
+
+          // console.log(f0data);
+          // console.log(f2data);
+          // console.log(f02data);
+
+          for (let i = 0; i <= numberDirections; i++) {
+              xdata[i] = i * (360/numberDirections);
+          }
+
+          var f0 = {
+              x: xdata,
+              y: f0data,
+              type: 'scatter',
+              mode: 'lines',
+          };
+
+          var f2 = {
+              x: xdata,
+              y: f2data,
+              type: 'scatter',
+              mode: 'lines',
+              line: {
+                  color: 'rgb(219, 64, 82)'
+              }
+          };
+
+          var f02 = {
+              x: xdata,
+              y: f02data,
+              type: 'scatter',
+              mode: 'lines',
+              line: {
+                  color: 'rgb(27,158,119)'
+              }
+          };
+
+          var margin = {
+              b: 30,
+              l: 50,
+              r: 0,
+              t: 50
+          }
+
+          var f0layout = {
+              margin: margin,
+              showlegend: false,
+              title: 'Constant Forces (F0)',
+              xaxis: {
+                  dtick: 90
+              },
+              yaxis: {
+                  rangemode: 'tozero'
+              }
+          };
+
+          var f2layout = {
+              margin: margin,
+              showlegend: false,
+              title: 'Gravitational Forces (F2)',
+              xaxis: {
+                  dtick: 90
+              },
+              yaxis: {
+                  rangemode: 'tozero'
+              }
+          };
+
+          var f02layout = {
+              margin: margin,
+              showlegend: false,
+              title: 'Hybrid Forces (F02)',
+              xaxis: {
+                  dtick: 90
+              },
+              yaxis: {
+                  rangemode: 'tozero'
+              }
+          };
+
+          var config = {
+              displayModeBar: false,
+              scrollZoom: false,
+              responsive: true,
+              staticPlot: true
+          };
+
+          Plotly.react('f0plot', [f0], f0layout, config);
+          Plotly.react('f2plot', [f2], f2layout, config);
+          Plotly.react('f02plot', [f02], f02layout, config);
+
+      }
+    }
 
 
   </script>
