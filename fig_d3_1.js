@@ -120,11 +120,14 @@ function makeDraggableBox(box) {
     const handle_size = 10;
     const handle_color = 'rgba(100, 100, 100, 50%)';
 
+    let active = false;
+
     let group = svg.append('g');
+    let ctrl = group.append('g')
+        .attr('opacity', 0);
 
     let offset = {x: 0, y: 0};
     
-
     function boxDragStarted(event) {
         offset = {
             x: box.x[0] - event.x,
@@ -148,48 +151,64 @@ function makeDraggableBox(box) {
     function htlDrag(event) {
         box.x[0] = event.x;
         box.y[0] = event.y;
-        updatePosition()
+        updatePosition();
     }
 
     function htrDrag(event) {
         box.x[1] = event.x;
         box.y[0] = event.y;
-        updatePosition()
+        updatePosition();
     }
 
     function hblDrag(event) {
         box.x[0] = event.x;
         box.y[1] = event.y;
-        updatePosition()
+        updatePosition();
     }
 
     function hbrDrag(event) {
         box.x[1] = event.x;
         box.y[1] = event.y;
-        updatePosition()
+        updatePosition();
     }
+
+    function mouseOver(event) {
+        // console.log(event);
+        active = true;
+        ctrl.transition()
+            .attr('opacity', 1);
+    }
+
+    function mouseOut(event) {
+        active = false;
+        ctrl.transition()
+            .attr('opacity', 0);
+    }
+
+    group.on('mouseover', mouseOver)
+    .on('mouseout', mouseOut);
 
     let rect = group.append('rect')
         .attr('fill', box.color)
         .attr('stroke', 'rgba(0, 0, 0, 50%)')
         .call(boxDrag);
 
-    let htl = group.append('circle')
+    let htl = ctrl.append('circle')
         .attr('r', handle_size)
         .attr('fill', handle_color)
         .call(d3.drag().on('drag', htlDrag));
     
-    let htr = group.append('circle')
+    let htr = ctrl.append('circle')
         .attr('r', handle_size)
         .attr('fill', handle_color)
         .call(d3.drag().on('drag', htrDrag));
     
-    let hbl = group.append('circle')
+    let hbl = ctrl.append('circle')
         .attr('r', handle_size)
         .attr('fill', handle_color)
         .call(d3.drag().on('drag', hblDrag));
     
-    let hbr = group.append('circle')
+    let hbr = ctrl.append('circle')
         .attr('r', handle_size)
         .attr('fill', handle_color)
         .call(d3.drag().on('drag', hbrDrag));
@@ -213,7 +232,7 @@ function makeDraggableBox(box) {
         hbr.attr('cx', box.x[1])
            .attr('cy', box.y[1]);
         
-        console.log(`${b1.x} ${b1.y}`);
+        // console.log(`${b1.x} ${b1.y}`);
     }
 
     updatePosition();
