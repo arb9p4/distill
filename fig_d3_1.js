@@ -9,18 +9,28 @@ let margin = {
 };
 
 let b1 = {
-    x: [50, 280],
+    x: [50, 180],
     y: [40, 170],
     color: d3.schemeCategory10[0]
 };
 
 let b2 = {
-    x: [150, 330],
+    x: [150, 300],
     y: [140, 270],
     color: d3.schemeCategory10[1]
 };
 
+let b3 = {
+    x: [350, 380],
+    y: [40, 70],
+    color: d3.schemeCategory10[2]
+};
 
+let b4 = {
+    x: [330, 430],
+    y: [80, 170],
+    color: d3.schemeCategory10[3]
+};
 
 
 let svg = d3.select(`div#${figName}`).append('svg');
@@ -64,30 +74,65 @@ let xAxis = plots.append("g")
 let yAxis = plots.append("g");
 
 
+function getTFdiff(box1, box2) {
+    let dxmin = box2.xmin() - box1.xmax();
+    let dxmax = box2.xmax() - box1.xmin();
+    let dxmean = 0.5 * (dxmin + dxmax);
+
+    let dymin = box2.ymin() - box1.ymax();
+    let dymax = box2.ymax() - box1.ymin();
+    let dymean = 0.5 * (dymin + dymax);
+
+    return {'x': [dxmin, dxmean, dxmax],
+            'y': [dymin, dymean, dymax]};
+}
+
 function computeStats() {
 
     try {
-        let dxmin = b2.xmin() - b1.xmax();
-        let dxmax = b2.xmax() - b1.xmin();
-        let dxmean = 0.5 * (dxmin + dxmax);
 
-        let dymin = b2.ymin() - b1.ymax();
-        let dymax = b2.ymax() - b1.ymin();
-        let dymean = 0.5 * (dymin + dymax);
+        let d1 = getTFdiff(b1, b2);
+        let d2 = getTFdiff(b3, b4);
+
+        console.log(`${d1.x} ${d1.y}`);
+        console.log(`${d2.x} ${d2.y}`);
+
+        let dmin = [d2.x[0] - d1.x[0], d2.y[0] - d1.y[0]];
+        let smin = 1 / (Math.sqrt(dmin[0]**2 + dmin[1]**2) + 0.0001);
+
+        let dmean = [d2.x[1] - d1.x[1], d2.y[1] - d1.y[1]];
+        let smean = 1 / (Math.sqrt(dmean[0]**2 + dmean[1]**2) + 0.0001);
+
+        let dmax = [d2.x[2] - d1.x[2], d2.y[2] - d1.y[2]];
+        let smax = 1 / (Math.sqrt(dmax[0]**2 + dmax[1]**2) + 0.0001);
+
+        let pdx = 0;
+        let pdy = 0;
+        for (let i = 0; i < 3; i++) {
+            pdx += Math.abs(d1.x[i]-d2.x[i])/(d1.x[2]-d1.x[0]+d2.x[2]-d2.x[0]);
+            pdy += Math.abs(d1.y[i]-d2.y[i])/(d1.y[2]-d1.y[0]+d2.y[2]-d2.y[0]);
+        }
+        pdx = 1/(1+pdx);
+        pdy = 1/(1+pdy);
+
+        let pdmin = Math.min(pdx, pdy);
+        let pdmean = 0.5 * (pdx + pdy);
 
         let data = [
-            {'name': 'dxmin', 'value': dxmin},
-            {'name': 'dxmean', 'value': dxmean},
-            {'name': 'dxmax', 'value': dxmax},
-            {'name': 'dymin', 'value': dymin},
-            {'name': 'dymean', 'value': dymean},
-            {'name': 'dymax', 'value': dymax}
+            {'name': 'smin', 'value': smin},
+            {'name': 'smean', 'value': smean},
+            {'name': 'smax', 'value': smax},
+            {'name': 'pdx', 'value': pdx},
+            {'name': 'pdy', 'value': pdy},
+            {'name': 'pdmin', 'value': pdmin},
+            {'name': 'pdmean', 'value': pdmean}
         ]
 
         x.domain(data.map(d => d.name));
         xAxis.call(d3.axisBottom(x));
 
-        y.domain([d3.min(data, d => d.value), d3.max(data, d => d.value)]);
+        // y.domain([d3.min(data, d => d.value), d3.max(data, d => d.value)]);
+        y.domain([0, 1]);
         yAxis.transition().call(d3.axisLeft(y));
 
         plots.selectAll("rect")
@@ -247,5 +292,6 @@ function makeDraggableBox(box) {
 
 makeDraggableBox(b1);
 makeDraggableBox(b2);
-
+makeDraggableBox(b3);
+makeDraggableBox(b4);
 
