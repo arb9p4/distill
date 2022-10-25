@@ -8,37 +8,19 @@ let margin = {
     top: 20, right: 30, bottom: 30, left: 40
 };
 
+let b1 = {
+    x: [50, 280],
+    y: [40, 170],
+    color: d3.schemeCategory10[0]
+};
+
+let b2 = {
+    x: [150, 330],
+    y: [140, 270],
+    color: d3.schemeCategory10[1]
+};
 
 
-
-
-
-
-// function dragstarted(event, d) {
-//     // d3.select(this).raise().attr("stroke", "black");
-// }
-
-// function dragged(event, d) {
-//     // d3.select(this).attr("x", d.x = event.x).attr("y", d.y = event.y);
-//     // console.log(`${d.i} ${event.x} ${event.y}`);
-//     // console.log(this);
-//     // b1d.attr("x", event.x);
-//     // b1d.attr("y", event.y);
-//     // console.log(`${event.x} ${event.y}`);
-//     // d.x[0] = event.x;
-//     d3.select(this).attr("x", d.x[0] = event.x);
-//     console.log(d.x[0]);
-
-// }
-
-// function dragended(event, d) {
-//     // d3.select(this).attr("stroke", null);
-// }
-
-// let drag = d3.drag()
-//     .on("start", dragstarted)
-//     .on("drag", dragged)
-//     .on("end", dragended);
 
 
 let svg = d3.select(`div#${figName}`).append('svg');
@@ -47,87 +29,108 @@ svg.style("background-color", "#eee");
 svg.style("width", width);
 svg.style("height", height);
 
-// let x = d3.scaleLinear()
-//     .domain([-10, 10])
-//     .range([margin.left, width - margin.right]);
-
-// let y = d3.scaleLinear()
-//     .domain([-10, 10])
-//     .range([height - margin.bottom, margin.top]);
-
-
-// let h1 = svg.append("circle")
-//     .attr("cx", 100)
-//     .attr("cy", 100)
-//     .attr("r", 30)
-//     .attr("fill", "rgb(200, 0, 0)");
-
-// let h2 = svg.append("circle")
-//     .attr("cx", 200)
-//     .attr("cy", 100)
-//     .attr("r", 30)
-//     .attr("fill", "rgb(0, 200, 0)")
-
-// var position = [100, 50];  // internal variable
-// var p2 = [200, 50];  // internal variable
-
-// function on_drag(event) {
-//     // set internal variable based on mouse position
-//     // console.log(d);
-//     position = [event.x, event.y];
-//     redraw();
-// }
-// function redraw() {
-//     // set circle's position based on internal variable
-//     h1.attr("cx", position[0])
-//         .attr("cy", position[1]);
-// }
-// h1.call(d3.drag().on('drag', on_drag));
-    
+// Clear the control handles when clicking on the background (mainly for mobile)
+let controls = [];
+function clearCtrl(event) {
+    controls.map(ctrl => ctrl.transition().attr('opacity', 0));
+}
+svg.on('click', clearCtrl);
 
 
-// function makeDraggableCircle(point) {
-//     let circle = svg.append('circle')
-//         .attr('class', "draggable")
-//         .attr('r', 10)
-//         .attr('fill', "hsl(0,50%,50%)")
-//         .call(d3.drag().on('drag', onDrag));
+let plot_outer_height = 150;
+let plot_margins = {
+    top: 20, right: 30, bottom: 30, left: 40
+};
+let plot_width = width - plot_margins.left - plot_margins.right;
+let plot_height = plot_outer_height - plot_margins.top - plot_margins.bottom;
 
-//     function updatePosition() {
-//         circle.attr('cx', point.x)
-//               .attr('cy', point.y);
-                 
-//     }
-    
-//     function onDrag(event) {
-//         point.x = event.x;
-//         point.y = event.y;
-//         updatePosition();
-//     }
+let plots = d3.select(`div#${figName}`).append('svg')
+              .attr("background-color", "#3ee")
+              .attr("width", width)
+              .attr("height", plot_outer_height)
+            .append("g")
+              .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-//     updatePosition();
-// }
+let x = d3.scaleBand()
+          .range([0, plot_width])
+          .padding(0.1);
 
-// let A = {x: 200, y: 200}, B = {x: 300, y: 100};
+let y = d3.scaleLinear()
+          .range([plot_height, 0]);
 
-// makeDraggableCircle(A);
-// makeDraggableCircle(B);
+let xAxis = plots.append("g")
+    .attr('transform', `translate(0,${plot_height})`);
+
+let yAxis = plots.append("g");
 
 
+function computeStats() {
+
+    try {
+        let dxmin = b2.xmin() - b1.xmax();
+        let dxmax = b2.xmax() - b1.xmin();
+        let dxmean = 0.5 * (dxmin + dxmax);
+
+        let dymin = b2.ymin() - b1.ymax();
+        let dymax = b2.ymax() - b1.ymin();
+        let dymean = 0.5 * (dymin + dymax);
+
+        let data = [
+            {'name': 'dxmin', 'value': dxmin},
+            {'name': 'dxmean', 'value': dxmean},
+            {'name': 'dxmax', 'value': dxmax},
+            {'name': 'dymin', 'value': dymin},
+            {'name': 'dymean', 'value': dymean},
+            {'name': 'dymax', 'value': dymax}
+        ]
+
+        x.domain(data.map(d => d.name));
+        xAxis.call(d3.axisBottom(x));
+
+        y.domain([d3.min(data, d => d.value), d3.max(data, d => d.value)]);
+        yAxis.transition().call(d3.axisLeft(y));
+
+        plots.selectAll("rect")
+            .data(data)
+            .join("rect")
+            .attr("x", d => x(d.name))
+            .attr("y", d => y(d.value))
+            .attr("width", d => x.bandwidth())
+            .attr("height", d => plot_height - y(d.value))
+            .attr("fill", "steelblue");
+
+    }
+    catch (error) {
+        console.log(error);
+    }
+
+};
 
 function makeDraggableBox(box) {
 
     const handle_size = 10;
     const handle_color = 'rgba(100, 100, 100, 50%)';
 
-    let active = false;
-
     let group = svg.append('g');
-    let ctrl = group.append('g')
-        .attr('opacity', 0);
 
     let offset = {x: 0, y: 0};
     
+    box.xmin = function() {
+        return Math.min(...box.x);
+    }
+
+    box.xmax = function() {
+        return Math.max(...box.x);
+    }
+
+    box.ymin = function() {
+        return Math.min(...box.y);
+    }
+
+    box.ymax = function() {
+        return Math.max(...box.y);
+    }
+
     function boxDragStarted(event) {
         offset = {
             x: box.x[0] - event.x,
@@ -173,25 +176,26 @@ function makeDraggableBox(box) {
     }
 
     function mouseOver(event) {
-        // console.log(event);
-        active = true;
         ctrl.transition()
             .attr('opacity', 1);
     }
 
     function mouseOut(event) {
-        active = false;
         ctrl.transition()
             .attr('opacity', 0);
     }
 
     group.on('mouseover', mouseOver)
-    .on('mouseout', mouseOut);
+         .on('mouseout', mouseOut);
 
     let rect = group.append('rect')
         .attr('fill', box.color)
         .attr('stroke', 'rgba(0, 0, 0, 50%)')
         .call(boxDrag);
+    
+    let ctrl = group.append('g')
+        .attr('opacity', 0);
+    controls.push(ctrl);    // Add to the list of controls so we can clear if needed
 
     let htl = ctrl.append('circle')
         .attr('r', handle_size)
@@ -215,10 +219,10 @@ function makeDraggableBox(box) {
 
     function updatePosition() {
         group.raise();
-        let x0 = Math.min(...box.x);
-        let x1 = Math.max(...box.x);
-        let y0 = Math.min(...box.y);
-        let y1 = Math.max(...box.y);
+        let x0 = box.xmin();
+        let x1 = box.xmax();
+        let y0 = box.ymin();
+        let y1 = box.ymax();
         rect.attr('x', x0)
             .attr('y', y0)
             .attr('width', x1 - x0)
@@ -233,79 +237,15 @@ function makeDraggableBox(box) {
            .attr('cy', box.y[1]);
         
         // console.log(`${b1.x} ${b1.y}`);
+
+        computeStats();
     }
 
     updatePosition();
 }
 
 
-
-
-
-// let g1 = svg.append('g');
-// let b1 = {
-//     x: Math.random() * (width - box_size * 2) + box_size,
-//     y: Math.random() * (height - box_size * 2) + box_size,
-//     width: Math.random() * box_size + box_size,
-//     height: Math.random() * box_size + box_size
-// };
-
-let b1 = {
-    x: [50, 280],
-    y: [40, 170],
-    color: d3.schemeCategory10[0]
-};
-
-let b2 = {
-    x: [150, 330],
-    y: [140, 270],
-    color: d3.schemeCategory10[1]
-};
-
 makeDraggableBox(b1);
 makeDraggableBox(b2);
-
-// g1.selectAll("rect")
-//     .data(b1)
-//     .join("rect")
-//     .attr("x", d => d.x[0])
-//     .attr("y", d => d.y[0])
-//     .attr("width", d => d.x[1] - d.x[0])
-//     .attr("height", d => d.y[1] - d.y[0])
-//     .attr("fill", (d, i) => d3.schemeCategory10[i % 10])
-//     .call(drag);
-
-// let b1d = g1.append("rect")
-//     .attr("x", b1.x)
-//     .attr("y", b1.y)
-//     .attr("width", b1.width)
-//     .attr("height", b1.height)
-//     .attr("fill", d3.schemeCategory10[0]);
-
-// g1.append("circle")
-//     .attr("cx", b1.x)
-//     .attr("cy", b1.y)
-//     .attr("r", 5)
-//     .call(drag);
-
-const boxes = d3.range(5).map(i => ({
-    x: Math.random() * (width - box_size * 2) + box_size,
-    y: Math.random() * (height - box_size * 2) + box_size,
-    i: i
-  }));
-
-
-
-
-
-// svg.selectAll("rect")
-//   .data(boxes)
-//   .join("rect")
-//     .attr("x", d => d.x)
-//     .attr("y", d => d.y)
-//     .attr("width", box_size)
-//     .attr("height", box_size)
-//     .attr("fill", (d, i) => d3.schemeCategory10[i % 10])
-//     .call(drag);
 
 
