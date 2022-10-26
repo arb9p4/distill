@@ -47,6 +47,37 @@ function clearCtrl(event) {
 svg.on('click', clearCtrl);
 
 
+
+
+let mf_plot_outer_height = 150;
+let mf_plot_margins = {
+    top: 20, right: 30, bottom: 30, left: 40
+};
+let mf_plot_width = width - mf_plot_margins.left - mf_plot_margins.right;
+let mf_plot_height = mf_plot_outer_height - mf_plot_margins.top - mf_plot_margins.bottom;
+
+let mf_plots = d3.select(`div#${figName}`).append('svg')
+              .attr("background-color", "#3ee")
+              .attr("width", width)
+              .attr("height", mf_plot_outer_height)
+            .append("g")
+              .attr("transform", `translate(${mf_plot_margins.left}, ${mf_plot_margins.top})`);
+
+let mf_x = d3.scaleLinear()
+          .range([0, mf_plot_width]);
+
+let mf_y = d3.scaleLinear()
+          .range([mf_plot_height, 0]);
+
+let mf_xAxis = mf_plots.append("g")
+    .attr('transform', `translate(0,${mf_plot_height})`);
+
+let mf_yAxis = mf_plots.append("g");
+
+
+
+
+
 let plot_outer_height = 150;
 let plot_margins = {
     top: 20, right: 30, bottom: 30, left: 40
@@ -94,8 +125,8 @@ function computeStats() {
         let d1 = getTFdiff(b1, b2);
         let d2 = getTFdiff(b3, b4);
 
-        console.log(`${d1.x} ${d1.y}`);
-        console.log(`${d2.x} ${d2.y}`);
+        // console.log(`${d1.x} ${d1.y}`);
+        // console.log(`${d2.x} ${d2.y}`);
 
         let dmin = [d2.x[0] - d1.x[0], d2.y[0] - d1.y[0]];
         let smin = 1 / (Math.sqrt(dmin[0]**2 + dmin[1]**2) + 0.0001);
@@ -143,6 +174,30 @@ function computeStats() {
             .attr("width", d => x.bandwidth())
             .attr("height", d => plot_height - y(d.value))
             .attr("fill", "steelblue");
+
+        d1.color = 'red';
+        d2.color = 'blue';
+        let mf_data = [d1, d2];
+
+        let mf_data_min = mf_data.map(d => d.x[0]).reduce((acc, cur) => Math.min(acc, cur), Infinity);
+        let mf_data_max = mf_data.map(d => d.x[2]).reduce((acc, cur) => Math.max(acc, cur), -Infinity);
+        // console.log(mf_data_min, mf_data_max);
+
+        let x_buff = 10;
+        mf_x.domain([mf_data_min-x_buff, mf_data_max+x_buff]);
+        mf_xAxis.call(d3.axisBottom(mf_x));
+
+        mf_y.domain([0, 1]);
+        mf_yAxis.call(d3.axisLeft(mf_y));
+
+
+        mf_plots.selectAll("polygon")
+            .data(mf_data)
+            .join("polygon")
+            .attr("points", d => `${mf_x(d.x[0])},${mf_y(0)} ${mf_x(d.x[1])},${mf_y(1)} ${mf_x(d.x[2])},${mf_y(0)}`)
+            .attr("stroke", "black")
+            .attr("fill", d => d.color)
+            .attr("opacity", 0.5);
 
     }
     catch (error) {
