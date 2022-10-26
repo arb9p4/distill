@@ -338,9 +338,15 @@ function makeDraggableBox(box) {
     let hc = group.append('circle')
         .attr('r', 0.5*handle_size)
         .attr('fill', box.color)
+        .attr('stroke', 'rgba(0, 0, 0, 25%)')
         .call(d3.drag().on('drag', hcDrag));
 
     function updatePosition() {
+
+        // Enforce centroid bounds
+        box.centroid[0] = Math.max(Math.min(box.centroid[0], box.xmax()), box.xmin());
+        box.centroid[1] = Math.max(Math.min(box.centroid[1], box.ymax()), box.ymin());
+
         group.raise();
         let x0 = box.xmin();
         let x1 = box.xmax();
