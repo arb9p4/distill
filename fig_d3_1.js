@@ -108,11 +108,13 @@ let yAxis = plots.append("g");
 function getTFdiff(box1, box2) {
     let dxmin = box2.xmin() - box1.xmax();
     let dxmax = box2.xmax() - box1.xmin();
-    let dxmean = 0.5 * (dxmin + dxmax);
+    // let dxmean = 0.5 * (dxmin + dxmax);
+    let dxmean = box2.centroid[0] - box1.centroid[0];
 
     let dymin = box2.ymin() - box1.ymax();
     let dymax = box2.ymax() - box1.ymin();
-    let dymean = 0.5 * (dymin + dymax);
+    // let dymean = 0.5 * (dymin + dymax);
+    let dymean = box2.centroid[1] - box1.centroid[1];
 
     return {'x': [dxmin, dxmean, dxmax],
             'y': [dymin, dymean, dymax]};
@@ -231,6 +233,8 @@ function makeDraggableBox(box) {
         return Math.max(...box.y);
     }
 
+    box.centroid = [0.5*(box.x[0] + box.x[1]), 0.5*(box.y[0] + box.y[1])];
+
     function boxDragStarted(event) {
         offset = {
             x: box.x[0] - event.x,
@@ -242,8 +246,11 @@ function makeDraggableBox(box) {
     function boxDragged(event) {
         let dx = box.x[1] - box.x[0];
         let dy = box.y[1] - box.y[0];
+        let dxc = box.centroid[0] - box.x[0];
+        let dyc = box.centroid[1] - box.y[0];
         box.x = [event.x + offset.x, event.x + offset.x + dx];
         box.y = [event.y + offset.y, event.y + offset.y + dy];
+        box.centroid = [event.x + offset.x + dxc, event.y + offset.y + dyc];
         updatePosition();
     }
         
@@ -275,14 +282,24 @@ function makeDraggableBox(box) {
         updatePosition();
     }
 
+    function hcDrag(event) {
+        box.centroid[0] = event.x;
+        box.centroid[1] = event.y;
+        updatePosition();
+    }
+
     function mouseOver(event) {
         ctrl.transition()
             .attr('opacity', 1);
+        hc.transition()
+            .attr('r', handle_size);
     }
 
     function mouseOut(event) {
         ctrl.transition()
             .attr('opacity', 0);
+        hc.transition()
+            .attr('r', 0.5*handle_size);
     }
 
     group.on('mouseover', mouseOver)
@@ -291,6 +308,7 @@ function makeDraggableBox(box) {
     let rect = group.append('rect')
         .attr('fill', box.color)
         .attr('stroke', 'rgba(0, 0, 0, 50%)')
+        .attr('opacity', 0.8)
         .call(boxDrag);
     
     let ctrl = group.append('g')
@@ -317,6 +335,11 @@ function makeDraggableBox(box) {
         .attr('fill', handle_color)
         .call(d3.drag().on('drag', hbrDrag));
 
+    let hc = group.append('circle')
+        .attr('r', 0.5*handle_size)
+        .attr('fill', box.color)
+        .call(d3.drag().on('drag', hcDrag));
+
     function updatePosition() {
         group.raise();
         let x0 = box.xmin();
@@ -335,6 +358,8 @@ function makeDraggableBox(box) {
            .attr('cy', box.y[1]);
         hbr.attr('cx', box.x[1])
            .attr('cy', box.y[1]);
+        hc.attr('cx', box.centroid[0])
+          .attr('cy', box.centroid[1]);
         
         // console.log(`${b1.x} ${b1.y}`);
 
