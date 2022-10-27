@@ -11,25 +11,25 @@ let margin = {
 let b1 = {
     x: [50, 180],
     y: [40, 170],
-    color: d3.schemeCategory10[0]
+    color: '#3399ff'
 };
 
 let b2 = {
     x: [150, 300],
     y: [140, 270],
-    color: d3.schemeCategory10[1]
+    color: '#ff3333'
 };
 
 let b3 = {
     x: [350, 380],
     y: [40, 70],
-    color: d3.schemeCategory10[2]
+    color: '#99ccff'
 };
 
 let b4 = {
     x: [330, 430],
     y: [80, 170],
-    color: d3.schemeCategory10[3]
+    color: '#ff9999'
 };
 
 
@@ -38,6 +38,7 @@ let svg = d3.select(`div#${figName}`).append('svg');
 svg.style("background-color", "#eee");
 svg.style("width", width);
 svg.style("height", height);
+svg.style("margin-bottom", '10px')
 
 // Clear the control handles when clicking on the background (mainly for mobile)
 let controls = [];
@@ -51,31 +52,66 @@ svg.on('click', clearCtrl);
 
 let mf_plot_outer_height = 150;
 let mf_plot_margins = {
-    top: 20, right: 30, bottom: 30, left: 40
+    top: 20, right: 30, bottom: 40, left: 40
 };
 let mf_plot_width = width - mf_plot_margins.left - mf_plot_margins.right;
 let mf_plot_height = mf_plot_outer_height - mf_plot_margins.top - mf_plot_margins.bottom;
 
-let mf_plots = d3.select(`div#${figName}`).append('svg')
+
+let mf_plots_x = d3.select(`div#${figName}`).append('svg')
               .attr("background-color", "#3ee")
               .attr("width", width)
               .attr("height", mf_plot_outer_height)
+              .style("margin-bottom", '30px')
             .append("g")
               .attr("transform", `translate(${mf_plot_margins.left}, ${mf_plot_margins.top})`);
 
-let mf_x = d3.scaleLinear()
+let mf_x_x = d3.scaleLinear()
           .range([0, mf_plot_width]);
 
-let mf_y = d3.scaleLinear()
+let mf_y_x = d3.scaleLinear()
           .range([mf_plot_height, 0]);
 
-let mf_xAxis = mf_plots.append("g")
+let mf_xAxis_x = mf_plots_x.append("g")
     .attr('transform', `translate(0,${mf_plot_height})`);
 
-let mf_yAxis = mf_plots.append("g");
+let mf_yAxis_x = mf_plots_x.append("g");
+
+let mf_plots_x_box = mf_plots_x.append("g");
+let mf_plots_x_mf = mf_plots_x.append("g");
+
+let mf_xAxis_title_x = mf_plots_x.append("text")
+   .attr("transform", "translate(" + (mf_plot_width/2) + " ," + (mf_plot_height+40) + ")")
+   .style("text-anchor", "middle")
+   .text("X");
 
 
+let mf_plots_y = d3.select(`div#${figName}`).append('svg')
+              .attr("background-color", "#3ee")
+              .attr("width", width)
+              .attr("height", mf_plot_outer_height)
+              .style("margin-bottom", '30px')
+            .append("g")
+              .attr("transform", `translate(${mf_plot_margins.left}, ${mf_plot_margins.top})`);
 
+let mf_x_y = d3.scaleLinear()
+          .range([0, mf_plot_width]);
+
+let mf_y_y = d3.scaleLinear()
+          .range([mf_plot_height, 0]);
+
+let mf_xAxis_y = mf_plots_y.append("g")
+    .attr('transform', `translate(0,${mf_plot_height})`);
+
+let mf_yAxis_y = mf_plots_y.append("g");
+
+let mf_plots_y_box = mf_plots_y.append("g");
+let mf_plots_y_mf = mf_plots_y.append("g");
+
+let mf_xAxis_title_y = mf_plots_y.append("text")
+   .attr("transform", "translate(" + (mf_plot_width/2) + " ," + (mf_plot_height+40) + ")")
+   .style("text-anchor", "middle")
+   .text("Y");
 
 
 let plot_outer_height = 150;
@@ -177,29 +213,64 @@ function computeStats() {
             .attr("height", d => plot_height - y(d.value))
             .attr("fill", "steelblue");
 
-        d1.color = 'red';
-        d2.color = 'blue';
+        d1.color = '#5cd65c';
+        d2.color = '#adebad';
         let mf_data = [d1, d2];
+        let box_data = [b1, b2, b3, b4];
 
-        let mf_data_min = mf_data.map(d => d.x[0]).reduce((acc, cur) => Math.min(acc, cur), Infinity);
-        let mf_data_max = mf_data.map(d => d.x[2]).reduce((acc, cur) => Math.max(acc, cur), -Infinity);
+        let mf_data_min_x = mf_data.map(d => d.x[0]).reduce((acc, cur) => Math.min(acc, cur), Infinity);
+        let mf_data_max_x = mf_data.map(d => d.x[2]).reduce((acc, cur) => Math.max(acc, cur), -Infinity);
+        let mf_data_min_y = mf_data.map(d => d.y[0]).reduce((acc, cur) => Math.min(acc, cur), Infinity);
+        let mf_data_max_y = mf_data.map(d => d.y[2]).reduce((acc, cur) => Math.max(acc, cur), -Infinity);
         // console.log(mf_data_min, mf_data_max);
 
         let x_buff = 10;
-        mf_x.domain([mf_data_min-x_buff, mf_data_max+x_buff]);
-        mf_xAxis.call(d3.axisBottom(mf_x));
+        
+        // mf_x_x.domain([mf_data_min_x-x_buff, mf_data_max_x+x_buff]);
+        mf_x_x.domain([-width-x_buff, width+x_buff]);
+        mf_xAxis_x.call(d3.axisBottom(mf_x_x));
 
-        mf_y.domain([0, 1]);
-        mf_yAxis.call(d3.axisLeft(mf_y));
+        mf_y_x.domain([0, 1]);
+        mf_yAxis_x.call(d3.axisLeft(mf_y_x).ticks(3));
 
-
-        mf_plots.selectAll("polygon")
-            .data(mf_data)
+        mf_plots_x_box.selectAll("polygon")
+            .data(box_data)
             .join("polygon")
-            .attr("points", d => `${mf_x(d.x[0])},${mf_y(0)} ${mf_x(d.x[1])},${mf_y(1)} ${mf_x(d.x[2])},${mf_y(0)}`)
+            .attr("points", d => `${mf_x_x(d.x[0])},${mf_y_x(0)} ${mf_x_x(d.centroid[0])},${mf_y_x(1)} ${mf_x_x(d.x[1])},${mf_y_x(0)}`)
             .attr("stroke", "black")
             .attr("fill", d => d.color)
-            .attr("opacity", 0.5);
+            .attr("opacity", 0.8);
+
+        mf_plots_x_mf.selectAll("polygon")
+            .data(mf_data)
+            .join("polygon")
+            .attr("points", d => `${mf_x_x(d.x[0])},${mf_y_x(0)} ${mf_x_x(d.x[1])},${mf_y_x(1)} ${mf_x_x(d.x[2])},${mf_y_x(0)}`)
+            .attr("stroke", "black")
+            .attr("fill", d => d.color)
+            .attr("opacity", 0.8);
+        
+        // mf_x_y.domain([mf_data_min_y-x_buff, mf_data_max_y+x_buff]);
+        mf_x_y.domain([-height-x_buff, height+x_buff]);
+        mf_xAxis_y.call(d3.axisBottom(mf_x_y));
+
+        mf_y_y.domain([0, 1]);
+        mf_yAxis_y.call(d3.axisLeft(mf_y_y).ticks(3));
+
+        mf_plots_y_box.selectAll("polygon")
+            .data(box_data)
+            .join("polygon")
+            .attr("points", d => `${mf_x_y(d.y[0])},${mf_y_y(0)} ${mf_x_y(d.centroid[1])},${mf_y_y(1)} ${mf_x_y(d.y[1])},${mf_y_y(0)}`)
+            .attr("stroke", "black")
+            .attr("fill", d => d.color)
+            .attr("opacity", 0.8);
+
+        mf_plots_y_mf.selectAll("polygon")
+            .data(mf_data)
+            .join("polygon")
+            .attr("points", d => `${mf_x_y(d.y[0])},${mf_y_y(0)} ${mf_x_y(d.y[1])},${mf_y_y(1)} ${mf_x_y(d.y[2])},${mf_y_y(0)}`)
+            .attr("stroke", "black")
+            .attr("fill", d => d.color)
+            .attr("opacity", 0.8);
 
     }
     catch (error) {
@@ -310,6 +381,12 @@ function makeDraggableBox(box) {
         .attr('stroke', 'rgba(0, 0, 0, 50%)')
         .attr('opacity', 0.8)
         .call(boxDrag);
+
+    let hc = group.append('circle')
+        .attr('r', 0.5*handle_size)
+        .attr('fill', box.color)
+        .attr('stroke', 'rgba(0, 0, 0, 25%)')
+        .call(d3.drag().on('drag', hcDrag));
     
     let ctrl = group.append('g')
         .attr('opacity', 0);
@@ -335,11 +412,7 @@ function makeDraggableBox(box) {
         .attr('fill', handle_color)
         .call(d3.drag().on('drag', hbrDrag));
 
-    let hc = group.append('circle')
-        .attr('r', 0.5*handle_size)
-        .attr('fill', box.color)
-        .attr('stroke', 'rgba(0, 0, 0, 25%)')
-        .call(d3.drag().on('drag', hcDrag));
+    
 
     function updatePosition() {
 
