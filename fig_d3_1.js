@@ -1,5 +1,3 @@
-import './hofcore.js';
-
 let figName = 'fig-d3-1';
 
 
@@ -269,9 +267,12 @@ function hof(box1, box2) {
     return {'f0': f0, 'f02': f02}
 }
 
+
+let use_hof = true;
+
 function setHighRes(event) {
     console.log('set high res');
-
+    use_hof = true;
     numberDirections = 128;
     angleIncrement = 360/numberDirections;
     canvas_resolution = 0.5;
@@ -283,7 +284,7 @@ function setHighRes(event) {
 
 function setLowRes(event) {
     console.log('set low res');
-
+    use_hof = true;
     numberDirections = 32;
     angleIncrement = 360/numberDirections;
     canvas_resolution = 0.08;
@@ -293,11 +294,15 @@ function setLowRes(event) {
     computeStats();
 }
 
-let btn1 = d3.select(`div#${figName}`).append('button')
+let btn_no_hof = d3.select(`div#${figName}`).append('button')
+    .text('No HoF')
+    .style('margin', '5px')
+    .on('click', function () { use_hof = false; computeStats(); });
+let btn_low_hof = d3.select(`div#${figName}`).append('button')
     .text('Low Fidelity HoF')
     .style('margin', '5px')
     .on('click', setLowRes);
-let btn2 = d3.select(`div#${figName}`).append('button')
+let btn_high_hof = d3.select(`div#${figName}`).append('button')
     .text('High Fidelity HoF')
     .style('margin', '5px')
     .on('click', setHighRes);
@@ -429,25 +434,41 @@ function computeStats() {
             .attr("fill", d => d.color)
             .attr("opacity", 0.8);
 
+        let hof1, hof2;
+        let hof_data_f0, hof_data_f02;
+        let hof_data_max_y_0, hof_data_max_y_2;
 
-       
+        if (use_hof) {
+            hof1 = hof(b1, b2);
+            hof2 = hof(b3, b4);
 
-        let hof1 = hof(b1, b2);
-        let hof2 = hof(b3, b4);
+            hof_data_f0 = [
+                {'f': hof1.f0, 'color': "#ff9900"},
+                {'f': hof2.f0, 'color': "#ffd699"}
+            ];
 
-        let hof_data_f0 = [
-            {'f': hof1.f0, 'color': "#ff9900"},
-            {'f': hof2.f0, 'color': "#ffd699"}
-        ];
+            hof_data_f02 = [
+                {'f': hof1.f02, 'color': "#8000ff"},
+                {'f': hof2.f02, 'color': "#cc99ff"}
+            ];
 
-        let hof_data_f02 = [
-            {'f': hof1.f02, 'color': "#8000ff"},
-            {'f': hof2.f02, 'color': "#cc99ff"}
-        ];
+            hof_data_max_y_0 = hof_data_f0.map(d => Math.max(...d.f)).reduce((acc, cur) => Math.max(acc, cur), -Infinity);
+            hof_data_max_y_2 = hof_data_f02.map(d => Math.max(...d.f)).reduce((acc, cur) => Math.max(acc, cur), -Infinity);
+        }
+        else {
+            hof_data_f0 = [
+                {'f': [], 'color': "#ff9900"},
+                {'f': [], 'color': "#ffd699"}
+            ];
+            hof_data_f02 = [
+                {'f': [], 'color': "#8000ff"},
+                {'f': [], 'color': "#cc99ff"}
+            ];
+            hof_data_max_y_0 = 1;
+            hof_data_max_y_2 = 1;
+        }
 
-        let hof_data_max_y_0 = hof_data_f0.map(d => Math.max(...d.f)).reduce((acc, cur) => Math.max(acc, cur), -Infinity);
-        let hof_data_max_y_2 = hof_data_f02.map(d => Math.max(...d.f)).reduce((acc, cur) => Math.max(acc, cur), -Infinity);
-
+        
         hof_x_0.domain([0, 360]);
         hof_xAxis_0.call(d3.axisBottom(hof_x_0).tickValues(d3.range(0, 360, 30)));
 
@@ -493,7 +514,7 @@ function computeStats() {
 
 
 
-        let hofSim = computeHoFSim(hof1, hof2);
+        
 
         // let dmin = [d2.x[0] - d1.x[0], d2.y[0] - d1.y[0]];
         // let smin = 1 / (Math.sqrt(dmin[0]**2 + dmin[1]**2) + 0.0001);
@@ -516,21 +537,23 @@ function computeStats() {
         let pdmin = Math.min(pdx, pdy);
         let pdmean = 0.5 * (pdx + pdy);
 
-        let data = [
-            // {'name': 'smin', 'value': smin},
-            // {'name': 'smean', 'value': smean},
-            // {'name': 'smax', 'value': smax},
-            // {'name': 'pdx', 'value': pdx},
-            // {'name': 'pdy', 'value': pdy},
-            {'name': 'TFN-SA-Min-PD', 'value': pdmin},
-            {'name': 'TFN-SA-Mean-PD', 'value': pdmean},
-            // {'name': 'f0_cc', 'value': f0_cc},
-            // {'name': 'f02_cc', 'value': f02_cc}
-            {'name': 'HOF-T', 'value': hofSim.t},
-            {'name': 'HOF-P', 'value': hofSim.p},
-            {'name': 'HOF-C', 'value': hofSim.cc}
-        ]
-
+        let data;
+        if (use_hof) {
+            let hofSim = computeHoFSim(hof1, hof2);
+            data = [
+                {'name': 'TFN-SA-Min-PD', 'value': pdmin},
+                {'name': 'TFN-SA-Mean-PD', 'value': pdmean},
+                {'name': 'HOF-T', 'value': hofSim.t},
+                {'name': 'HOF-P', 'value': hofSim.p},
+                {'name': 'HOF-C', 'value': hofSim.cc}
+            ];
+        }
+        else {
+            data = [
+                {'name': 'TFN-SA-Min-PD', 'value': pdmin},
+                {'name': 'TFN-SA-Mean-PD', 'value': pdmean}
+            ];
+        }
         x.domain(data.map(d => d.name));
         xAxis.call(d3.axisBottom(x));
 
@@ -730,18 +753,26 @@ makeDraggableBox(b3);
 makeDraggableBox(b4);
 
 function initialize() {
+    console.log("try init");
     try {
-        Module.onRuntimeInitialized = function() {
-            console.log(
-                "init"
-            );
+        if (Module.runtimeInitialized) {
+            console.log("initialized");
             computeStats();
+            console.log('here');
+        } else {
+            console.log('retry');
+            setTimeout(initialize, 100);
         }
+        
     }
-    catch {
+    catch (error){
+        console.log(error);
         console.log('not init');
         setTimeout(initialize, 100);
     }
 }
 
-initialize();
+// initialize();
+
+// Todo: make this more robust (need to wait for HoF module to load)
+setTimeout(computeStats, 1000);
