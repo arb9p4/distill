@@ -227,7 +227,7 @@ function getTFdiff(box1, box2) {
 
 let numberDirections = 32;
 let angleIncrement = 360/numberDirections;
-function hof(box1, box2) {
+function hof(box2, box1) {
     let ctx_width = context.canvas.width;
     let ctx_height = context.canvas.height;
     let x0, y0, x1, y1;
@@ -264,6 +264,16 @@ function hof(box1, box2) {
     let f0 = FHist(numberDirections, false, 0.0, imgA, imgB, ctx_width, ctx_height);
     let f02 = FHist(numberDirections, true, 0.0, imgA, imgB, ctx_width, ctx_height);
     
+    // Rotate the histograms
+    f0.reverse();
+    f02.reverse();
+
+    let n = 3 * numberDirections / 4;
+    f0 = f0.slice(n, -1).concat(f0.slice(0, n)).concat(f0[n])
+    f02 = f02.slice(n, -1).concat(f02.slice(0, n)).concat(f02[n])
+
+    // console.log(f0);
+
     return {'f0': f0, 'f02': f02}
 }
 
