@@ -1,0 +1,570 @@
+<!--
+  Copyright 2018 The Distill Template Authors
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+       http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!doctype html>
+
+<head>
+  <script src="template.v2.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf8">
+
+
+  <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
+
+  <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'></script> -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  
+  <script src="hof.js"></script>
+
+  <style type="text/css">
+    svg {
+      user-select: none;
+    }
+    #fig {
+        margin: 50px;
+        width: 500px;
+    }
+    #fig canvas {
+        border: 1px solid black;
+        height: 400px;
+        image-rendering: pixelated;
+    }
+    #hofplots {
+        margin: 50px;
+        width: 500px;
+    }
+    #hofplots div {
+        height: 200px;
+        margin-bottom: 30px;
+    }
+  </style>
+
+</head>
+
+<body>
+  <!-- <distill-header></distill-header> -->
+  <d-front-matter>
+    <script id='distill-front-matter' type="text/json">{
+    "title": "Exploring Relative Position Descriptors",
+    "authors": [
+      {
+        "author":"Andrew Buck",
+        "authorURL":"https://andrew-buck.com/",
+        "affiliations": [{"name": "University of Missouri", "url": "https://missouri.edu"}]
+      },
+      {
+        "author":"Derek Anderson",
+        "authorURL":"https://derektanderson.com/",
+        "affiliations": [{"name": "University of Missouri", "url": "https://missouri.edu"}]
+      },
+      {
+        "author":"James Keller",
+        "affiliations": [{"name": "University of Missouri", "url": "https://missouri.edu"}]
+      }
+    ],
+    "katex": {
+      "delimiters": [
+        {"left": "$$", "right": "$$", "display": false}
+      ]
+    }
+  }</script>
+  </d-front-matter>
+  <d-article>
+    
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas pharetra lacus et purus feugiat volutpat. Vivamus eu nibh tempor, fringilla lacus ut, imperdiet dolor. Nam ac lorem sapien. Phasellus vulputate nunc a dapibus eleifend. Nam ac nisi ac sapien consequat finibus quis quis sem. Ut feugiat dictum ligula sed lacinia. Donec aliquet, dui non malesuada euismod, nunc magna interdum quam, eu finibus libero neque sed urna. Nullam imperdiet massa nec felis semper tempor. Fusce sed lacus risus. Suspendisse et elit sit amet ipsum vulputate suscipit. Curabitur venenatis ullamcorper neque, a vulputate orci lacinia eget. Nam ullamcorper semper tortor nec posuere. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae;</p>
+
+    <div id="fig-d3-1" class="l-body"></div>
+    <script type="module" src="fig_d3_1.js"></script>
+
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas pharetra lacus et purus feugiat volutpat. Vivamus eu nibh tempor, fringilla lacus ut, imperdiet dolor. Nam ac lorem sapien. Phasellus vulputate nunc a dapibus eleifend. Nam ac nisi ac sapien consequat finibus quis quis sem. Ut feugiat dictum ligula sed lacinia. Donec aliquet, dui non malesuada euismod, nunc magna interdum quam, eu finibus libero neque sed urna. Nullam imperdiet massa nec felis semper tempor. Fusce sed lacus risus. Suspendisse et elit sit amet ipsum vulputate suscipit. Curabitur venenatis ullamcorper neque, a vulputate orci lacinia eget. Nam ullamcorper semper tortor nec posuere. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae;</p>
+
+    <div id="fig-pts1" class="l-body"></div>
+    <script type="module" src="fig_pts1.js"></script>
+
+    <div id="fig-pts2" class="l-body"></div>
+    <script type="module" src="fig_pts2.js"></script>
+
+    <p>The following is an example of an axis-aligned bounding box (although there is currently no object that is bound). 
+    Click and drag on the 3D axes to move the camera view and drag the control points on the bottom axis to adjust the size of the box.</p>
+
+	  <div id="fig1" class="l-body"></div>
+
+    <p>Phasellus in dui eget massa euismod egestas. Nulla nunc ex, rutrum non mi ut, auctor cursus felis. Sed laoreet mauris sit amet auctor porta. Maecenas ex turpis, pellentesque eu justo quis, dignissim volutpat lorem. Curabitur facilisis lacinia dui aliquet lobortis. Sed maximus purus vel porta auctor. Nam ut diam justo. Aliquam nec ex sit amet nunc pretium sodales ac euismod arcu. Nunc et leo sit amet elit maximus rutrum. Pellentesque non laoreet ipsum, vel cursus nisi. Vivamus mi nisi, faucibus ut neque non, aliquet iaculis massa. Sed faucibus odio eu magna pretium, at eleifend arcu lacinia. Mauris laoreet leo quis nulla laoreet rutrum. Vivamus posuere justo risus, molestie elementum metus dapibus eget. Donec eleifend tempus dolor consequat accumsan.</p>
+
+    <p>Below you can explore the Histogram of Forces on an interactive canvas. Use the mouse to draw a red and blue object and
+       observe the resulting force histograms.
+    </p>
+
+    <div id="fig">
+        <fieldset>
+            <legend>Brush Type:</legend>
+            <input type="radio" name="drawtype" id="A" checked>
+            <label for="A">Red</label>
+            <input type="radio" name="drawtype" id="B">
+            <label for="B">Blue</label>
+            <input type="radio" name="drawtype" id="C">
+            <label for="C">Erase</label>
+            <!-- <input type="button" onclick="update();" value="Update"> -->
+        </fieldset>
+        <canvas id="objects"></canvas>
+    </div>
+    <div id="hofplots">
+        <div id="f0plot"></div>
+        <div id="f2plot"></div>
+        <div id="f02plot"></div>
+    </div>
+
+    <p>Sed suscipit eu magna eu convallis. Vivamus semper nisl sit amet quam finibus bibendum. Curabitur nec lobortis felis. Sed odio mi, consequat venenatis tellus non, posuere euismod nunc. Donec semper hendrerit luctus. Cras vitae pharetra mauris. Sed luctus metus nec lectus finibus aliquam. Suspendisse ante urna, accumsan sed dui sed, tristique molestie felis. Ut orci nibh, ullamcorper eu massa at, dictum molestie ipsum. Quisque sed semper massa. Mauris varius sit amet justo sit amet ornare. Nam vitae ex dui. Duis sed ex arcu. Nullam posuere dolor sem, interdum mattis nibh sollicitudin egestas. Nullam mollis elementum euismod.</p>
+
+
+  </d-article>
+
+  <d-appendix>
+
+    <!-- <d-bibliography src="bibliography.bib"></d-bibliography> -->
+  </d-appendix>
+
+  <!-- <distill-footer></distill-footer> -->
+
+  <script>
+    
+    const figName = 'fig1';
+
+    // Define figure domain
+    let domain = {
+      x: [0, 10],
+      y: [0, 10],
+      z: [0, 10]
+    }
+
+    // Define box parameters
+    let box1 = {
+      x_min: 1,
+      x_max: 2,
+      y_min: 3,
+      y_max: 4,
+      z_min: 5,
+      z_max: 6
+    };
+
+
+
+
+    function box_to_lines(box) {
+
+      const x_min = box.x_min,
+            x_max = box.x_max,
+            y_min = box.y_min,
+            y_max = box.y_max,
+            z_min = box.z_min,
+            z_max = box.z_max
+
+      const x = [x_min, x_min, x_max, x_max, x_min, x_min, x_min, x_min, x_min, x_max, x_max, x_max, x_max, x_max, x_max, x_min],
+            y = [y_min, y_max, y_max, y_min, y_min, y_min, y_max, y_max, y_max, y_max, y_max, y_max, y_min, y_min, y_min, y_min],
+            z = [z_min, z_min, z_min, z_min, z_min, z_max, z_max, z_min, z_max, z_max, z_min, z_max, z_max, z_min, z_max, z_max];
+
+      return [x, y, z];
+
+    }
+
+    function init_3d(fig, box) {
+
+      let width = document.getElementById(fig).clientWidth;
+
+      let [x, y, z] = box_to_lines(box);
+
+      let data = {
+        type: 'scatter3d',
+        mode: 'lines',
+        x: x,
+        y: y,
+        z: z,
+        line: {
+          color: 'red'
+        },
+        hoverinfo: 'none'
+      };
+
+      let layout = {
+        margin: {
+          b: 0,
+          l: 0,
+          r: 0,
+          t: 0
+        },
+        autosize: false,
+        width: width,
+        height: Math.min(width, 450),
+        paper_bgcolor: '#f4f4f4',
+        hovermode: false,
+        scene: {
+          aspectmode: 'manual',
+          aspectratio: {
+            x: 1, y: 1, z: 1,
+          },
+          camera: {
+            projection: {
+              type: "orthographic"
+            },
+            eye: {
+              x: 1.25,
+              y: -1.25,
+              z: 1.25
+            }
+          },
+          xaxis: {
+            range: domain.x,
+            showspikes: false,
+            tick0: 0,
+            dtick: 2
+          },
+          yaxis: {
+            range: domain.y,
+            showspikes: false,
+            tick0: 0,
+            dtick: 2
+          },
+          zaxis: {
+            range: domain.z,
+            showspikes: false,
+            tick0: 0,
+            dtick: 2
+          }
+        }
+      };
+
+      let config = {
+        displayModeBar: false,
+        scrollZoom: false,
+        responsive: true
+      };
+
+      let view3d = document.createElement('div');
+      view3d.id = `${fig}-view3d`;
+      document.getElementById(fig).append(view3d);
+
+      let update = function() {
+
+        let [x, y, z] = box_to_lines(box);
+
+        data.x = x;
+        data.y = y;
+        data.z = z;
+
+        width = document.getElementById(fig).clientWidth;
+        layout.width = width;
+        layout.height = Math.min(width, 450);
+
+        Plotly.react(view3d, [data], layout, config);
+      }
+
+      Plotly.newPlot(view3d, [data], layout, config);
+
+      return update;
+
+    }
+
+
+    let fig3d_update = init_3d(figName, box1);
+
+
+    function resize() {
+      fig3d_update();
+      drawD3();
+    }
+
+
+    // D3
+
+    var svg = d3.select(`div#${figName}`).append('svg');
+    var svgxAxis = svg.append("g");
+    var svgyAxis = svg.append("g");
+    var svgCtrl = svg.append("g");
+    
+    function drawD3()
+    {
+
+      let width = document.getElementById(figName).clientWidth,
+          height = 80,
+          radius = 5;
+          margin = {
+            top: 20, right: 30, bottom: 30, left: 40
+          };
+
+      svg.attr('width', width)
+         .attr('height', height)
+         .style('background-color', '#EEEEEE');
+      
+      let x = d3.scaleLinear()
+                .domain(domain.x)
+                .range([margin.left, width - margin.right]);
+      
+      let y = d3.scaleLinear()
+                .domain([0, 1])
+                .range([height - margin.bottom, margin.top]);
+      
+      let xAxis = g => g
+          .attr("transform", `translate(0,${height - margin.bottom})`)
+          .call(d3.axisBottom(x)
+                  .ticks(10));
+      
+      let yAxis = g => g
+          .attr("transform", `translate(${margin.left}, 0)`)
+          .call(d3.axisLeft(y)
+                  .ticks(1));
+
+      svgxAxis.call(xAxis);
+      svgyAxis.call(yAxis);
+
+      let controlPts = [
+        {
+          x: x(box1.x_min),
+          y: y(0),
+          i: 0
+        },
+        {
+          x: x((box1.x_min + box1.x_max)/2),
+          y: y(1),
+          i: 1
+        },
+        {
+          x: x(box1.x_max),
+          y: y(0),
+          i: 2
+        }
+      ]
+
+      function dragstarted(event, d) {
+        d3.select(this).raise().attr("stroke", "black");
+      }
+
+      function dragged(event, d) {
+        let minX = domain.x[0];
+        let maxX = domain.x[1];
+        if (d.i == 0) {
+          maxX = box1.x_max;
+        }
+        if (d.i == 1) {
+          minX = box1.x_min;
+          maxX = box1.x_max;
+        }
+        if (d.i == 2) {
+          minX = box1.x_min;
+        }
+
+        let newXi = Math.min(Math.max(minX, x.invert(event.x)), maxX);
+        let newX = x(newXi);
+        d3.select(this).attr("cx", d.x = newX);
+
+        if (d.i == 0) {
+          box1.x_min = newXi;
+          fig3d_update();
+        }
+        if (d.i == 2) {
+          box1.x_max = newXi;
+          fig3d_update();
+        }
+      }
+
+      function dragended(event, d) {
+        d3.select(this).attr("stroke", null);
+      }
+
+      let drag = d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended);
+
+
+      svgCtrl.selectAll("circle")
+        .data(controlPts)
+        .join("circle")
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y)
+        .attr("r", radius)
+        .attr("fill", '#F00')
+        .call(drag);
+
+    }
+
+    window.onresize = resize;
+    document.onload = resize();
+
+
+
+    // HoF
+    {
+      const width = 100;
+      const height = 90;
+      const numberDirections = 64;    // Must be a multiple of 4!
+
+      
+      let canvas = document.getElementById("objects");            
+      canvas.width = width;
+      canvas.height = height;
+      canvas.style.backgroundColor = "#000";
+
+      let context = canvas.getContext("2d");
+      context.lineWidth = 10;
+      context.lineCap = "round";
+      context.imageSmoothingEnabled = false;
+
+      let isMouseDown = false;
+      let previous = { x: 0, y: 0 };
+
+      canvas.addEventListener("mousemove", event => {
+          if (isMouseDown) {
+              let { offsetX: x, offsetY: y } = event;
+              
+              x *= width/canvas.clientWidth;
+              y *= height/canvas.clientHeight; 
+
+              let color = "#000";
+              if( document.getElementById('A').checked ) {
+                  color = "#F00";
+              }
+              else if ( document.getElementById('B').checked ) {
+                  color = "#00F";
+              }
+              context.strokeStyle = color;
+              context.beginPath();
+              
+              context.moveTo(previous.x, previous.y);
+              context.lineTo(x, y);
+              context.stroke();
+
+              previous = { x, y };
+
+              // update();
+          }
+      });
+
+      canvas.addEventListener("mousedown", event => {
+          let { offsetX: x, offsetY: y } = event;
+          x *= width/canvas.clientWidth;
+          y *= height/canvas.clientHeight;
+          previous = { x, y };
+
+          isMouseDown = true;
+      });
+
+      canvas.addEventListener("mouseup", event => {
+          isMouseDown = false;
+          update();
+      });
+
+      
+      function update() {
+
+          // let hist = F0Hist(context, numberDirections);
+
+          let xdata = new Array(numberDirections+1);
+          let f0data = F0Hist(context, numberDirections);
+          let f2data = F2Hist(context, numberDirections);
+          let f02data = F02Hist(context, numberDirections);
+
+          // console.log(f0data);
+          // console.log(f2data);
+          // console.log(f02data);
+
+          for (let i = 0; i <= numberDirections; i++) {
+              xdata[i] = i * (360/numberDirections);
+          }
+
+          var f0 = {
+              x: xdata,
+              y: f0data,
+              type: 'scatter',
+              mode: 'lines',
+          };
+
+          var f2 = {
+              x: xdata,
+              y: f2data,
+              type: 'scatter',
+              mode: 'lines',
+              line: {
+                  color: 'rgb(219, 64, 82)'
+              }
+          };
+
+          var f02 = {
+              x: xdata,
+              y: f02data,
+              type: 'scatter',
+              mode: 'lines',
+              line: {
+                  color: 'rgb(27,158,119)'
+              }
+          };
+
+          var margin = {
+              b: 30,
+              l: 50,
+              r: 0,
+              t: 50
+          }
+
+          var f0layout = {
+              margin: margin,
+              showlegend: false,
+              title: 'Constant Forces (F0)',
+              xaxis: {
+                  dtick: 90
+              },
+              yaxis: {
+                  rangemode: 'tozero'
+              }
+          };
+
+          var f2layout = {
+              margin: margin,
+              showlegend: false,
+              title: 'Gravitational Forces (F2)',
+              xaxis: {
+                  dtick: 90
+              },
+              yaxis: {
+                  rangemode: 'tozero'
+              }
+          };
+
+          var f02layout = {
+              margin: margin,
+              showlegend: false,
+              title: 'Hybrid Forces (F02)',
+              xaxis: {
+                  dtick: 90
+              },
+              yaxis: {
+                  rangemode: 'tozero'
+              }
+          };
+
+          var config = {
+              displayModeBar: false,
+              scrollZoom: false,
+              responsive: true,
+              staticPlot: true
+          };
+
+          Plotly.react('f0plot', [f0], f0layout, config);
+          Plotly.react('f2plot', [f2], f2layout, config);
+          Plotly.react('f02plot', [f02], f02layout, config);
+
+      }
+    }
+
+
+  </script>
+
+</body>

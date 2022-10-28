@@ -78,23 +78,41 @@
     }
   }</script>
   </d-front-matter>
+  <d-title>
+    <p>It's easy to describe the relative position of two single points, but how can we
+    measure the spatial relationship between more complicated objects? Here, we consider
+    simple 2D boxes and some ways to capture their relative position.</p>
+  </d-title>
   <d-article>
     
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas pharetra lacus et purus feugiat volutpat. Vivamus eu nibh tempor, fringilla lacus ut, imperdiet dolor. Nam ac lorem sapien. Phasellus vulputate nunc a dapibus eleifend. Nam ac nisi ac sapien consequat finibus quis quis sem. Ut feugiat dictum ligula sed lacinia. Donec aliquet, dui non malesuada euismod, nunc magna interdum quam, eu finibus libero neque sed urna. Nullam imperdiet massa nec felis semper tempor. Fusce sed lacus risus. Suspendisse et elit sit amet ipsum vulputate suscipit. Curabitur venenatis ullamcorper neque, a vulputate orci lacinia eget. Nam ullamcorper semper tortor nec posuere. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae;</p>
+    <p><i>This webpage is an interactive supplement for our more in-depth
+      articles</i><d-cite bibtex-key="buck2022"></d-cite><d-cite bibtex-key="buck2021"></d-cite>
+      <i>that describe how to compute these measures in more detail.</i></p>
+
+    <p>Consider a pair of 2D boxes as shown in the figure below. How would you describe
+      the relative position of the dark red box with respect to the dark blue box? In particular,
+      is their spatial configuration similar to that of the light blue and red boxes? You can
+      drag the boxes around and resize them to see how different similarity measures evaluate
+      this question. We consider two approaches, one using triangular fuzzy numbers (TFN) and another
+      using histograms of forces (HoF). Note that in this example for the TFN methods, the
+      boxes are weighted with a center of mass that can be adjusted.
+    </p>
+
 
     <div id="fig-d3-1" class="l-body"></div>
     <script type="module" src="fig_d3_1.js"></script>
 
-    
-
-    <p>Sed suscipit eu magna eu convallis. Vivamus semper nisl sit amet quam finibus bibendum. Curabitur nec lobortis felis. Sed odio mi, consequat venenatis tellus non, posuere euismod nunc. Donec semper hendrerit luctus. Cras vitae pharetra mauris. Sed luctus metus nec lectus finibus aliquam. Suspendisse ante urna, accumsan sed dui sed, tristique molestie felis. Ut orci nibh, ullamcorper eu massa at, dictum molestie ipsum. Quisque sed semper massa. Mauris varius sit amet justo sit amet ornare. Nam vitae ex dui. Duis sed ex arcu. Nullam posuere dolor sem, interdum mattis nibh sollicitudin egestas. Nullam mollis elementum euismod.</p>
+    <p>The TFN methods are simple to compute, however the HoF approach is more computationally
+      demanding. Use the buttons above to adjust the quality of the HoF calculation or to
+      turn it off completely to improve performance.
+    </p>
 
 
   </d-article>
 
   <d-appendix>
 
-    <!-- <d-bibliography src="bibliography.bib"></d-bibliography> -->
+    <d-bibliography src="bibliography.bib"></d-bibliography>
   </d-appendix>
 
   <!-- <distill-footer></distill-footer> -->
