@@ -8,27 +8,51 @@ let margin = {
     top: 20, right: 30, bottom: 30, left: 40
 };
 
+// let b1 = {
+//     x: [50, 180],
+//     y: [40, 170],
+//     color: '#3399ff'
+// };
+
+// let b2 = {
+//     x: [150, 300],
+//     y: [140, 270],
+//     color: '#ff3333'
+// };
+
+// let b3 = {
+//     x: [320, 380],
+//     y: [40, 120],
+//     color: '#99ccff'
+// };
+
+// let b4 = {
+//     x: [330, 430],
+//     y: [130, 190],
+//     color: '#ff9999'
+// };
+
 let b1 = {
-    x: [50, 180],
-    y: [40, 170],
+    x: [0.1*width, 0.4*width],
+    y: [0.1*height, 0.5*height],
     color: '#3399ff'
 };
 
 let b2 = {
-    x: [150, 300],
-    y: [140, 270],
+    x: [0.3*width, 0.5*width],
+    y: [0.4*height, 0.8*height],
     color: '#ff3333'
 };
 
 let b3 = {
-    x: [320, 380],
-    y: [40, 120],
+    x: [0.7*width, 0.9*width],
+    y: [0.2*height, 0.4*height],
     color: '#99ccff'
 };
 
 let b4 = {
-    x: [330, 430],
-    y: [130, 190],
+    x: [0.8*width, 0.9*width],
+    y: [0.5*height, 0.7*height],
     color: '#ff9999'
 };
 
