@@ -185,9 +185,9 @@ let hof_title_2 = hof_plots_2.append("text")
    .text("Hybrid Forces (F02)");
 
 
-let plot_outer_height = 180;
+let plot_outer_height = 200;
 let plot_margins = {
-    top: 20, right: 30, bottom: 50, left: 40
+    top: 20, right: 30, bottom: 90, left: 40
 };
 let plot_width = width - plot_margins.left - plot_margins.right;
 let plot_height = plot_outer_height - plot_margins.top - plot_margins.bottom;
@@ -220,7 +220,7 @@ let maxLine = plots.append("line")
     .attr('stroke-dasharray', "4")
 
 let plot_title = plots.append("text")
-    .attr("transform", "translate(" + (plot_width/2) + " ," + (plot_height+40) + ")")
+    .attr("transform", "translate(" + (plot_width/2) + " ," + (plot_height+80) + ")")
     .style("text-anchor", "middle")
     .text("Similarity Measures");
 
@@ -394,7 +394,97 @@ function computeHoFSim(hof1, hof2) {
         't': t,
         'p': p,
         'cc': cc
+    };
+}
+
+function isect(x0, x1, y0, y1) {
+    // From https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+    let denom = (x0-x1) - (y0-y1);
+    let eps = 1e-9;
+    if (Math.abs(denom) < eps) {
+        if (Math.abs(x0-x1) < eps && Math.abs(y0-y1) < eps && Math.abs(y0-x1) < eps) {
+            return [x0, 1];
+        }
+        else {
+            return [null, null];
+        }
     }
+    let t = (x0-y0)/denom;
+    let u = (y0-x0)/denom;
+    let px = x0 + t*(x1-x0);
+    let py = 1-t
+    if (py < 0 || py > 1) {
+        px = null;
+        py = null;
+    }
+    return [px, py];
+}
+
+function tri_intersect_area(A, B) {
+    A.sort(function(a, b){return a - b});
+    B.sort(function(a, b){return a - b});
+    
+    let pts = [];
+    pts.push(isect(A[1], A[0], B[1], B[0]));
+    pts.push(isect(A[1], A[0], B[1], B[2]));
+    pts.push(isect(A[1], A[2], B[1], B[0]));
+    pts.push(isect(A[1], A[2], B[1], B[2]));
+
+    pts = pts.filter(x => x[0] != null || x[1] != null);
+    pts.sort(function(a, b){
+        if (a[0] < b[0]) {return -1}
+        if (a[0] > b[0]) {return 1}
+        if (a[1] < b[1]) {return -1}
+        if (a[1] > b[1]) {return 1}
+        return 0;
+    });
+
+    let ip = [[Math.max(A[0], B[0]), 0]];
+    for (let i = 0; i < pts.length; i++) {
+        ip.push(pts[i]);
+    }
+    ip.push([Math.min(A[2], B[2]), 0]);
+    
+    let area = 0;
+    for (let i = 1; i < ip.length; i++) {
+        let x0 = ip[i-1][0];
+        let y0 = ip[i-1][1];
+        let x1 = ip[i][0];
+        let y1 = ip[i][1];
+        area += (x1 - x0) * (0.5*Math.abs(y1 - y0) + Math.min(y0, y1));
+    }
+    return area;
+}
+
+function tnorm_max(A, B) {
+    let pts = [];
+    pts.push(isect(A[1], A[0], B[1], B[0]));
+    pts.push(isect(A[1], A[0], B[1], B[2]));
+    pts.push(isect(A[1], A[2], B[1], B[0]));
+    pts.push(isect(A[1], A[2], B[1], B[2]));
+
+    let tnorm = 0;
+    for (let i = 0; i < pts.length; i++) {
+        if (pts[i][1] != null) {
+            tnorm = Math.max(tnorm, pts[i][1]);
+        }
+    }
+
+    return tnorm;
+}
+
+function tnorm_iou(A, B) {
+    let areaA = 0.5 * (A[2] - A[0]);
+    let areaB = 0.5 * (B[2] - B[0]);
+    let iarea = tri_intersect_area(A, B);
+    let uarea = areaA + areaB - iarea;
+
+    let iou = 0;
+    if (uarea > 0) {
+        iou = iarea / uarea;
+    }
+
+    return iou;
 }
 
 function computeStats() {
@@ -559,6 +649,17 @@ function computeStats() {
         // let dmax = [d2.x[2] - d1.x[2], d2.y[2] - d1.y[2]];
         // let smax = 1 / (Math.sqrt(dmax[0]**2 + dmax[1]**2) + 0.0001);
 
+
+        let samax_x = tnorm_max(d1.x, d2.x);
+        let samax_y = tnorm_max(d1.y, d2.y);
+        let samax_min = Math.min(samax_x, samax_y);
+        let samax_mean = 0.5 * (samax_x + samax_y);
+
+        let saiou_x = tnorm_iou(d1.x, d2.x);
+        let saiou_y = tnorm_iou(d1.y, d2.y);
+        let saiou_min = Math.min(saiou_x, saiou_y);
+        let saiou_mean = 0.5 * (saiou_x + saiou_y);
+
         let pdx = 0;
         let pdy = 0;
         for (let i = 0; i < 3; i++) {
@@ -575,7 +676,11 @@ function computeStats() {
         if (use_hof) {
             let hofSim = computeHoFSim(hof1, hof2);
             data = [
+                {'name': 'TFN-SA-Min-Max', 'value': samax_min},
+                {'name': 'TFN-SA-Min-IoU', 'value': saiou_min},
                 {'name': 'TFN-SA-Min-PD', 'value': pdmin},
+                {'name': 'TFN-SA-Mean-Max', 'value': samax_mean},
+                {'name': 'TFN-SA-Mean-IoU', 'value': saiou_mean},
                 {'name': 'TFN-SA-Mean-PD', 'value': pdmean},
                 {'name': 'HOF-T', 'value': hofSim.t},
                 {'name': 'HOF-P', 'value': hofSim.p},
@@ -584,12 +689,22 @@ function computeStats() {
         }
         else {
             data = [
+                {'name': 'TFN-SA-Min-Max', 'value': samax_min},
+                {'name': 'TFN-SA-Min-IoU', 'value': saiou_min},
                 {'name': 'TFN-SA-Min-PD', 'value': pdmin},
+                {'name': 'TFN-SA-Mean-Max', 'value': samax_mean},
+                {'name': 'TFN-SA-Mean-IoU', 'value': saiou_mean},
                 {'name': 'TFN-SA-Mean-PD', 'value': pdmean}
             ];
         }
         x.domain(data.map(d => d.name));
-        xAxis.call(d3.axisBottom(x));
+        xAxis.call(d3.axisBottom(x))
+            .selectAll("text")
+            .attr("y", 15)
+            .attr("x", 0)
+            .attr("dy", ".35em")
+            .attr("transform", "rotate(-30)")
+            .style("text-anchor", "end");
 
         // y.domain([d3.min(data, d => d.value), d3.max(data, d => d.value)]);
         y.domain([0, 1]);
