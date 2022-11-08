@@ -73,18 +73,18 @@ svg.on('click', clearCtrl);
 
 
 
-
+let half_width = width / 2;
 
 let mf_plot_outer_height = 130;
 let mf_plot_margins = {
     top: 20, right: 30, bottom: 50, left: 40
 };
-let mf_plot_width = width - mf_plot_margins.left - mf_plot_margins.right;
+let mf_plot_width = half_width - mf_plot_margins.left - mf_plot_margins.right;
 let mf_plot_height = mf_plot_outer_height - mf_plot_margins.top - mf_plot_margins.bottom;
 
 
 let mf_plots_x = d3.select(`div#${figName}`).append('svg')
-              .attr("width", width)
+              .attr("width", half_width)
               .attr("height", mf_plot_outer_height)
               .style("margin-bottom", '20px')
             .append("g")
@@ -111,7 +111,7 @@ let mf_xAxis_title_x = mf_plots_x.append("text")
 
 
 let mf_plots_y = d3.select(`div#${figName}`).append('svg')
-              .attr("width", width)
+              .attr("width", half_width)
               .attr("height", mf_plot_outer_height)
               .style("margin-bottom", '20px')
             .append("g")
@@ -138,7 +138,7 @@ let mf_xAxis_title_y = mf_plots_y.append("text")
 
 
 let hof_plots_0 = d3.select(`div#${figName}`).append('svg')
-   .attr("width", width)
+   .attr("width", half_width)
    .attr("height", mf_plot_outer_height)
    .style("margin-bottom", '20px')
  .append("g")
@@ -162,7 +162,7 @@ let hof_title_0 = hof_plots_0.append("text")
 
 
 let hof_plots_2 = d3.select(`div#${figName}`).append('svg')
-   .attr("width", width)
+   .attr("width", half_width)
    .attr("height", mf_plot_outer_height)
    .style("margin-bottom", '20px')
  .append("g")
@@ -424,7 +424,7 @@ function computeStats() {
         
         // mf_x_x.domain([mf_data_min_x-x_buff, mf_data_max_x+x_buff]);
         mf_x_x.domain([-width-x_buff, width+x_buff]);
-        mf_xAxis_x.call(d3.axisBottom(mf_x_x));
+        mf_xAxis_x.call(d3.axisBottom(mf_x_x).ticks(4));
 
         mf_y_x.domain([0, 1]);
         mf_yAxis_x.call(d3.axisLeft(mf_y_x).ticks(3));
@@ -447,7 +447,7 @@ function computeStats() {
         
         // mf_x_y.domain([mf_data_min_y-x_buff, mf_data_max_y+x_buff]);
         mf_x_y.domain([-height-x_buff, height+x_buff]);
-        mf_xAxis_y.call(d3.axisBottom(mf_x_y));
+        mf_xAxis_y.call(d3.axisBottom(mf_x_y).ticks(4));
 
         mf_y_y.domain([0, 1]);
         mf_yAxis_y.call(d3.axisLeft(mf_y_y).ticks(3));
@@ -504,7 +504,7 @@ function computeStats() {
 
         
         hof_x_0.domain([0, 360]);
-        hof_xAxis_0.call(d3.axisBottom(hof_x_0).tickValues(d3.range(0, 360, 30)));
+        hof_xAxis_0.call(d3.axisBottom(hof_x_0).tickValues(d3.range(0, 361, 90)));
 
         hof_y_0.domain([0, hof_data_max_y_0]);
         hof_yAxis_0.call(d3.axisLeft(hof_y_0).ticks(3));
@@ -526,7 +526,7 @@ function computeStats() {
 
         
         hof_x_2.domain([0, 360]);
-        hof_xAxis_2.call(d3.axisBottom(hof_x_2).tickValues(d3.range(0, 360, 30)));
+        hof_xAxis_2.call(d3.axisBottom(hof_x_2).tickValues(d3.range(0, 361, 90)));
 
         hof_y_2.domain([0, hof_data_max_y_2]);
         hof_yAxis_2.call(d3.axisLeft(hof_y_2).ticks(3));
