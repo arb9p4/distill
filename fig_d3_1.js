@@ -285,12 +285,18 @@ function hof(box2, box1) {
         imgB[i] = img[i*4];
     }
     
-    let f0 = FHist(numberDirections, false, 0.0, imgA, imgB, ctx_width, ctx_height);
-    let f02 = FHist(numberDirections, true, 0.0, imgA, imgB, ctx_width, ctx_height);
-    
-    // Rotate the histograms
-    f0.reverse();
-    f02.reverse();
+    let f0, f02;
+    if (use_vec_hof) {
+        f0 = FHistogram_CrispVector(numberDirections, 0.0, box1.xmin(), box1.xmax(), box1.ymin(), box1.ymax(), box2.xmin(), box2.xmax(), box2.ymin(), box2.ymax())
+        f02 = FHistogram_CrispVector(numberDirections, 2.0, box1.xmin(), box1.xmax(), box1.ymin(), box1.ymax(), box2.xmin(), box2.xmax(), box2.ymin(), box2.ymax())
+    } else {
+        f0 = FHist(numberDirections, false, 0.0, imgA, imgB, ctx_width, ctx_height);
+        f02 = FHist(numberDirections, true, 0.0, imgA, imgB, ctx_width, ctx_height);
+
+        // Rotate the histograms
+        f0.reverse();
+        f02.reverse();
+    }
 
     let n = 3 * numberDirections / 4;
     f0 = f0.slice(n, -1).concat(f0.slice(0, n)).concat(f0[n])
@@ -303,18 +309,33 @@ function hof(box2, box1) {
 
 
 let use_hof = true;
+let use_vec_hof = false;
+
+function setVectorHoF(event) {
+    console.log('set vector');
+    hof_plots_0_svg.style("display", "inline");
+    hof_plots_2_svg.style("display", "inline");
+    use_hof = true;
+    use_vec_hof = true;
+    numberDirections = 128;
+    angleIncrement = 360/numberDirections;
+    hof_title_2.text("Gravitational Forces (F2)");
+    computeStats();
+}
 
 function setHighRes(event) {
     console.log('set high res');
     hof_plots_0_svg.style("display", "inline");
     hof_plots_2_svg.style("display", "inline");
     use_hof = true;
+    use_vec_hof = false;
     numberDirections = 128;
     angleIncrement = 360/numberDirections;
     canvas_resolution = 0.5;
     canvas.setAttribute("width", width*canvas_resolution);
     canvas.setAttribute("height", height*canvas_resolution);
     context = canvas.getContext("2d", {'willReadFrequently': true});
+    hof_title_2.text("Hybrid Forces (F02)");
     computeStats();
 }
 
@@ -323,12 +344,14 @@ function setLowRes(event) {
     hof_plots_0_svg.style("display", "inline");
     hof_plots_2_svg.style("display", "inline");
     use_hof = true;
+    use_vec_hof = false;
     numberDirections = 32;
     angleIncrement = 360/numberDirections;
     canvas_resolution = 0.08;
     canvas.setAttribute("width", width*canvas_resolution);
     canvas.setAttribute("height", height*canvas_resolution);
     context = canvas.getContext("2d", {'willReadFrequently': true});
+    hof_title_2.text("Hybrid Forces (F02)");
     computeStats();
 }
 
@@ -351,6 +374,10 @@ let btn_high_hof = d3.select(`div#${figName}`).append('button')
     .text('High Fidelity HoF')
     .style('margin', '5px')
     .on('click', setHighRes);
+let btn_vec_hof = d3.select(`div#${figName}`).append('button')
+    .text('Vector HoF')
+    .style('margin', '5px')
+    .on('click', setVectorHoF);
 
 
 function computeHoFSim(hof1, hof2) {

@@ -66,3 +66,24 @@ function FHist(numberDirections, useHybrid, typeForce, imageA, imageB, width, he
   }
   
 }
+
+function vector_test() {
+  Module._vector_test();
+}
+
+
+function FHistogram_CrispVector(numberDirections, typeForce, AX0, AX1, AY0, AY1, BX0, BX1, BY0, BY1) {
+  let histOnHeap;
+  let hist;
+  try {
+      histOnHeap = Module._malloc((numberDirections+1) * 8);
+
+      Module._FHistogram_CrispVector(histOnHeap, numberDirections, typeForce, AX0, AX1, AY0, AY1, BX0, BX1, BY0, BY1)
+
+      hist = new Float64Array(Module.HEAPF64.buffer, histOnHeap, numberDirections+1);
+      
+      return Array.from(hist);
+  } finally {
+      Module._free(histOnHeap);
+  }
+}
