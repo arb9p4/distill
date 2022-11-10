@@ -289,6 +289,8 @@ function hof(box2, box1) {
     if (use_vec_hof) {
         f0 = FHistogram_CrispVector(numberDirections, 0.0, box1.xmin(), box1.xmax(), box1.ymin(), box1.ymax(), box2.xmin(), box2.xmax(), box2.ymin(), box2.ymax())
         f02 = FHistogram_CrispVector(numberDirections, 2.0, box1.xmin(), box1.xmax(), box1.ymin(), box1.ymax(), box2.xmin(), box2.xmax(), box2.ymin(), box2.ymax())
+
+        f02 = f02.map(x => Math.max(0, x))
     } else {
         f0 = FHist(numberDirections, false, 0.0, imgA, imgB, ctx_width, ctx_height);
         f02 = FHist(numberDirections, true, 0.0, imgA, imgB, ctx_width, ctx_height);
@@ -420,9 +422,10 @@ function computeHoFSim(hof1, hof2) {
         f02_h1_h1 += hof1.f02[i] * hof1.f02[i];
         f02_h2_h2 += hof2.f02[i] * hof2.f02[i];
     }
-    let f02_t = f02_min / f02_max;
-    let f02_p = 1 - f02_abs_diff / f02_abs_sum;
-    let f02_cc = f02_h1_h2 / (Math.sqrt(f02_h1_h1) * Math.sqrt(f02_h2_h2));
+    let eps = 0.000001;
+    let f02_t = f02_min / (f02_max + eps);
+    let f02_p = 1 - f02_abs_diff / (f02_abs_sum + eps);
+    let f02_cc = f02_h1_h2 / (Math.sqrt(f02_h1_h1) * Math.sqrt(f02_h2_h2) + eps);
 
     let t = 0.5 * f0_t + 0.5 * f02_t;
     let p = 0.5 * f0_p + 0.5 * f02_p;
@@ -635,7 +638,7 @@ function computeStats() {
         hof_xAxis_0.call(d3.axisBottom(hof_x_0).tickValues(d3.range(0, 361, 90)));
 
         hof_y_0.domain([0, hof_data_max_y_0]);
-        hof_yAxis_0.call(d3.axisLeft(hof_y_0).ticks(3));
+        hof_yAxis_0.call(d3.axisLeft(hof_y_0).ticks(3).tickFormat(d3.format('~s')));
 
         hof_plots_0.selectAll("polygon")
             .data(hof_data_f0)
