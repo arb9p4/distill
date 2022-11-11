@@ -427,9 +427,19 @@ function computeHoFSim(hof1, hof2) {
     let f02_p = 1 - f02_abs_diff / (f02_abs_sum + eps);
     let f02_cc = f02_h1_h2 / (Math.sqrt(f02_h1_h1) * Math.sqrt(f02_h2_h2) + eps);
 
-    let t = 0.5 * f0_t + 0.5 * f02_t;
-    let p = 0.5 * f0_p + 0.5 * f02_p;
-    let cc = 0.5 * f0_cc + 0.5 * f02_cc;
+    let f02_h1_is_zero = hof1.f02.map(x => x).reduce((acc, cur) => (cur==0) && acc, true);
+    let f02_h2_is_zero = hof2.f02.map(x => x).reduce((acc, cur) => (cur==0) && acc, true);
+
+    let t, p, cc;
+    if (f02_h1_is_zero || f02_h2_is_zero) {
+        t = 0.5 * f0_t;
+        p = 0.5 * f0_p;
+        cc = 0.5 * f0_cc;
+    } else {
+        t = 0.5 * f0_t + 0.5 * f02_t;
+        p = 0.5 * f0_p + 0.5 * f02_p;
+        cc = 0.5 * f0_cc + 0.5 * f02_cc;
+    }
 
     return {
         't': t,
