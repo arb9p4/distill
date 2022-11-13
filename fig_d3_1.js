@@ -2,7 +2,7 @@ let figName = 'fig-d3-1';
 
 
 let width = document.getElementById(figName).clientWidth;
-let height = 300;
+let height = 0.33 * width;
 let box_size = 30;
 let margin = {
     top: 20, right: 30, bottom: 30, left: 40
@@ -82,7 +82,8 @@ svg.on('click', clearCtrl);
 
 let half_width = (width / 2) - 1;
 
-let mf_plot_outer_height = 130;
+let mf_plot_outer_height = 0.33 * half_width;
+
 let mf_plot_margins = {
     top: 10, right: 30, bottom: 50, left: 40
 };
@@ -91,7 +92,7 @@ let mf_plot_height = mf_plot_outer_height - mf_plot_margins.top - mf_plot_margin
 let mf_margin_bottom = 10;
 
 let box_plot_margins = {
-    top: 20, right: 20, bottom: 20, left: 20
+    top: 20, right: 20, bottom: 50, left: 20
 };
 let box_plot_width = half_width - box_plot_margins.left - box_plot_margins.right;
 let box_plot_height = 2*mf_plot_outer_height + mf_margin_bottom - box_plot_margins.top - box_plot_margins.bottom;
@@ -120,6 +121,11 @@ let box_axis_x = box_plots.append("g")
 let box_axis_y = box_plots.append("g")
     .attr("transform", `translate(${box_x(0)}, 0)`)
     .call(d3.axisLeft(box_y).ticks(5).tickFormat(d => d == 0 ? '' : d));
+
+let box_title = box_plots.append("text")
+    .attr("transform", "translate(" + (box_plot_width/2) + " ," + (box_plot_height+40) + ")")
+    .style("text-anchor", "middle")
+    .text("TFN-RPDs");
 
 
 let mf_plots_x = d3.select(`div#${figName}`).append('svg')
