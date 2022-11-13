@@ -73,6 +73,9 @@ svg.on('click', clearCtrl);
 
 
 
+
+
+
 let half_width = width / 2;
 
 let mf_plot_outer_height = 130;
@@ -81,12 +84,44 @@ let mf_plot_margins = {
 };
 let mf_plot_width = half_width - mf_plot_margins.left - mf_plot_margins.right;
 let mf_plot_height = mf_plot_outer_height - mf_plot_margins.top - mf_plot_margins.bottom;
+let mf_margin_bottom = 10;
+
+let box_plot_margins = {
+    top: 20, right: 20, bottom: 20, left: 20
+};
+let box_plot_width = half_width - box_plot_margins.left - box_plot_margins.right;
+let box_plot_height = 2*mf_plot_outer_height + mf_margin_bottom - box_plot_margins.top - box_plot_margins.bottom;
+
+
+let box_plots = d3.select(`div#${figName}`).append('svg')
+        .attr("width", half_width)
+        .attr("height", 2*mf_plot_outer_height + mf_margin_bottom)
+        .style("margin-bottom", mf_margin_bottom+'px')
+        .style("float", "right")
+    .append("g")
+        .attr("transform", `translate(${box_plot_margins.left}, ${box_plot_margins.top})`);
+
+let box_x = d3.scaleLinear()
+    .range([0, box_plot_width])
+    .domain([-100, 100]);
+
+let box_y = d3.scaleLinear()
+    .range([0, box_plot_height])
+    .domain([100, -100]);
+
+let box_axis_x = box_plots.append("g")
+    .attr("transform", `translate(0, ${box_y(0)})`)
+    .call(d3.axisBottom(box_x).ticks(5).tickFormat(d => d == 0 ? '' : d));
+
+let box_axis_y = box_plots.append("g")
+    .attr("transform", `translate(${box_x(0)}, 0)`)
+    .call(d3.axisLeft(box_y).ticks(5).tickFormat(d => d == 0 ? '' : d));
 
 
 let mf_plots_x = d3.select(`div#${figName}`).append('svg')
               .attr("width", half_width)
               .attr("height", mf_plot_outer_height)
-              .style("margin-bottom", '10px')
+              .style("margin-bottom", mf_margin_bottom+'px')
             .append("g")
               .attr("transform", `translate(${mf_plot_margins.left}, ${mf_plot_margins.top})`);
 
@@ -113,7 +148,7 @@ let mf_xAxis_title_x = mf_plots_x.append("text")
 let mf_plots_y = d3.select(`div#${figName}`).append('svg')
               .attr("width", half_width)
               .attr("height", mf_plot_outer_height)
-              .style("margin-bottom", '10px')
+              .style("margin-bottom", mf_margin_bottom+'px')
             .append("g")
               .attr("transform", `translate(${mf_plot_margins.left}, ${mf_plot_margins.top})`);
 
@@ -140,7 +175,7 @@ let mf_xAxis_title_y = mf_plots_y.append("text")
 let hof_plots_0_svg = d3.select(`div#${figName}`).append('svg')
    .attr("width", half_width)
    .attr("height", mf_plot_outer_height)
-   .style("margin-bottom", '10px');
+   .style("margin-bottom", mf_margin_bottom+'px');
 let hof_plots_0 = hof_plots_0_svg.append("g")
    .attr("transform", `translate(${mf_plot_margins.left}, ${mf_plot_margins.top})`);
 
@@ -164,7 +199,7 @@ let hof_title_0 = hof_plots_0.append("text")
 let hof_plots_2_svg = d3.select(`div#${figName}`).append('svg')
    .attr("width", half_width)
    .attr("height", mf_plot_outer_height)
-   .style("margin-bottom", '10px');
+   .style("margin-bottom", mf_margin_bottom+'px');
 let hof_plots_2 = hof_plots_2_svg.append("g")
    .attr("transform", `translate(${mf_plot_margins.left}, ${mf_plot_margins.top})`);
 
@@ -195,7 +230,7 @@ let plot_height = plot_outer_height - plot_margins.top - plot_margins.bottom;
 let plots = d3.select(`div#${figName}`).append('svg')
               .attr("width", width)
               .attr("height", plot_outer_height)
-              .style("margin-bottom", '10px')
+              .style("margin-bottom", mf_margin_bottom+'px')
             .append("g")
               .attr("transform", `translate(${plot_margins.left}, ${plot_margins.top})`);
 
@@ -596,7 +631,7 @@ function computeStats() {
         mf_plots_y_box.selectAll("polygon")
             .data(box_data)
             .join("polygon")
-            .attr("points", d => `${mf_x_y(d.y[0])},${mf_y_y(0)} ${mf_x_y(d.centroid[1])},${mf_y_y(1)} ${mf_x_y(d.y[1])},${mf_y_y(0)}`)
+            .attr("points", d => `${mf_x_y(height-d.y[0])},${mf_y_y(0)} ${mf_x_y(height-d.centroid[1])},${mf_y_y(1)} ${mf_x_y(height-d.y[1])},${mf_y_y(0)}`)
             .attr("stroke", "black")
             .attr("fill", d => d.color)
             .attr("opacity", 0.8);
@@ -604,10 +639,49 @@ function computeStats() {
         mf_plots_y_mf.selectAll("polygon")
             .data(mf_data)
             .join("polygon")
-            .attr("points", d => `${mf_x_y(d.y[0])},${mf_y_y(0)} ${mf_x_y(d.y[1])},${mf_y_y(1)} ${mf_x_y(d.y[2])},${mf_y_y(0)}`)
+            .attr("points", d => `${mf_x_y(-d.y[0])},${mf_y_y(0)} ${mf_x_y(-d.y[1])},${mf_y_y(1)} ${mf_x_y(-d.y[2])},${mf_y_y(0)}`)
             .attr("stroke", "black")
             .attr("fill", d => d.color)
             .attr("opacity", 0.8);
+
+
+        let d_x_min = Math.min(d1.x[0], d2.x[0]);
+        let d_x_max = Math.max(d1.x[2], d2.x[2]);
+        let d_y_min = Math.min(d1.y[0], d2.y[0]);
+        let d_y_max = Math.max(d1.y[2], d2.y[2]);
+        let d_x_abs = Math.max(Math.abs(d_x_min), Math.abs(d_x_max));
+        let d_y_abs = Math.max(Math.abs(d_y_min), Math.abs(d_y_max));
+
+        let d_x_abs_ar = Math.max(d_x_abs, d_y_abs * box_plot_width / box_plot_height);
+        let d_y_abs_ar = d_x_abs_ar * box_plot_height / box_plot_width;
+
+        let box_buff = 30;
+        box_x.domain([-d_x_abs_ar-box_buff, d_x_abs_ar+box_buff]);
+        box_y.domain([d_y_abs_ar+box_buff, -d_y_abs_ar-box_buff]);
+
+        box_axis_x.call(d3.axisBottom(box_x).ticks(5).tickFormat(d => d == 0 ? '' : d));
+        box_axis_y.call(d3.axisLeft(box_y).ticks(5).tickFormat(d => d == 0 ? '' : d));
+
+        box_plots.selectAll('rect')
+            .data([d1, d2])
+            .join('rect')
+            .attr('fill', d => d.color)
+            .attr('stroke', 'rgba(0, 0, 0, 50%)')
+            .attr('opacity', 0.8)
+            .attr('x', d => box_x(d.x[0]))
+            .attr('y', d => box_y(-d.y[0]))
+            .attr('width', d => box_x(d.x[2]) - box_x(d.x[0]))
+            .attr('height', d => box_y(d.y[0]) - box_y(d.y[2]))
+        
+        box_plots.selectAll('circle')
+            .data([d1, d2])
+            .join('circle')
+            .attr('fill', d => d.color)
+            .attr('stroke', 'rgba(0, 0, 0, 25%)')
+            .attr('cx', d => box_x(d.x[1]))
+            .attr('cy', d => box_y(-d.y[1]))
+            .attr('r', 5);
+
 
         let hof1, hof2;
         let hof_data_f0, hof_data_f02;
@@ -717,11 +791,40 @@ function computeStats() {
             pdx += Math.abs(d1.x[i]-d2.x[i])/(d1.x[2]-d1.x[0]+d2.x[2]-d2.x[0]);
             pdy += Math.abs(d1.y[i]-d2.y[i])/(d1.y[2]-d1.y[0]+d2.y[2]-d2.y[0]);
         }
+
+        let bbpd = 1 / (1 + pdx + pdy);
+
         pdx = 1/(1+pdx);
         pdy = 1/(1+pdy);
 
         let pdmin = Math.min(pdx, pdy);
         let pdmean = 0.5 * (pdx + pdy);
+
+
+        let x_int = [Math.max(d1.x[0], d2.x[0]), Math.min(d1.x[2], d2.x[2])]
+        let y_int = [Math.max(d1.y[0], d2.y[0]), Math.min(d1.y[2], d2.y[2])]
+        let interArea = Math.max(0, x_int[1] - x_int[0]) * Math.max(0, y_int[1] - y_int[0]);
+
+        let d1_area = (d1.x[2] - d1.x[0]) * (d1.y[2] - d1.y[0]);
+        let d2_area = (d2.x[2] - d2.x[0]) * (d2.y[2] - d2.y[0]);
+
+        let bbiou = interArea / (d1_area + d2_area - interArea);
+
+        let x_hull = [Math.min(d1.x[0], d2.x[0]), Math.max(d1.x[2], d2.x[2])];
+        let y_hull = [Math.min(d1.y[0], d2.y[0]), Math.max(d1.y[2], d2.y[2])];
+        let hullArea = (x_hull[1] - x_hull[0]) * (y_hull[1] - y_hull[0]);
+
+        let bbgiou = bbiou - (hullArea - d1_area - d2_area + interArea) / hullArea;
+
+        let bbmgiou = (bbgiou + 1) / 2;
+
+
+        // let bbpd = 0;
+        // for (let i = 0; i < 3; i++) {
+        //     bbpd += Math.abs(d1.x[i] - d2.x[i]) / (d1.x[2]-d1.x[0]+d2.x[2]-d2.x[0]);
+        //     bbpd += Math.abs(d1.y[i] - d2.y[i]);
+        // }
+        // bbpd = 1 / (1 + bbpd);
 
         let data;
         if (use_hof) {
@@ -733,6 +836,9 @@ function computeStats() {
                 {'name': 'TFN-SA-Mean-Max', 'value': samax_mean},
                 {'name': 'TFN-SA-Mean-IoU', 'value': saiou_mean},
                 {'name': 'TFN-SA-Mean-PD', 'value': pdmean},
+                {'name': 'TFN-BB-IOU', 'value': bbiou},
+                {'name': 'TFN-BB-GIOU', 'value': bbmgiou},
+                {'name': 'TFN-BB-PD', 'value': bbpd},
                 {'name': 'HOF-T', 'value': hofSim.t},
                 {'name': 'HOF-P', 'value': hofSim.p},
                 {'name': 'HOF-C', 'value': hofSim.cc}
@@ -745,7 +851,10 @@ function computeStats() {
                 {'name': 'TFN-SA-Min-PD', 'value': pdmin},
                 {'name': 'TFN-SA-Mean-Max', 'value': samax_mean},
                 {'name': 'TFN-SA-Mean-IoU', 'value': saiou_mean},
-                {'name': 'TFN-SA-Mean-PD', 'value': pdmean}
+                {'name': 'TFN-SA-Mean-PD', 'value': pdmean},
+                {'name': 'TFN-BB-IOU', 'value': bbiou},
+                {'name': 'TFN-BB-GIOU', 'value': bbmgiou},
+                {'name': 'TFN-BB-PD', 'value': bbpd}
             ];
         }
         x.domain(data.map(d => d.name));
@@ -813,13 +922,20 @@ function makeDraggableBox(box) {
     }
         
     function boxDragged(event) {
+
+        
+
         let dx = box.x[1] - box.x[0];
         let dy = box.y[1] - box.y[0];
+
+        let canvas_x = Math.min(Math.max(event.x + offset.x, 0), width-dx);
+        let canvas_y = Math.min(Math.max(event.y + offset.y, 0), height-dy);
+
         let dxc = box.centroid[0] - box.x[0];
         let dyc = box.centroid[1] - box.y[0];
-        box.x = [event.x + offset.x, event.x + offset.x + dx];
-        box.y = [event.y + offset.y, event.y + offset.y + dy];
-        box.centroid = [event.x + offset.x + dxc, event.y + offset.y + dyc];
+        box.x = [canvas_x, canvas_x + dx];
+        box.y = [canvas_y, canvas_y + dy];
+        box.centroid = [canvas_x + dxc, canvas_y + dyc];
         updatePosition();
     }
 
@@ -913,6 +1029,12 @@ function makeDraggableBox(box) {
     
 
     function updatePosition() {
+
+        // Enforce canvas bounds
+        box.x[0] =  Math.min(Math.max(box.x[0], 0), width);
+        box.x[1] =  Math.min(Math.max(box.x[1], 0), width);
+        box.y[0] =  Math.min(Math.max(box.y[0], 0), height);
+        box.y[1] =  Math.min(Math.max(box.y[1], 0), height);
 
         // Enforce centroid bounds
         box.centroid[0] = Math.max(Math.min(box.centroid[0], box.xmax()), box.xmin());
