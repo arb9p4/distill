@@ -8,6 +8,10 @@ let margin = {
     top: 20, right: 30, bottom: 30, left: 40
 };
 
+let fig_container = d3.select(`div#${figName}`).append('div')
+    .style('width', width + 'px');
+figName += ' div';
+
 // let b1 = {
 //     x: [50, 180],
 //     y: [40, 170],
@@ -76,7 +80,7 @@ svg.on('click', clearCtrl);
 
 
 
-let half_width = width / 2;
+let half_width = (width / 2) - 1;
 
 let mf_plot_outer_height = 130;
 let mf_plot_margins = {
