@@ -82,7 +82,7 @@ svg.on('click', clearCtrl);
 
 let half_width = (width / 2) - 1;
 
-let mf_plot_outer_height = 0.33 * half_width;
+let mf_plot_outer_height = Math.max(0.33 * half_width, 100);
 
 let mf_plot_margins = {
     top: 10, right: 30, bottom: 50, left: 40
