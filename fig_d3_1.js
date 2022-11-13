@@ -230,7 +230,7 @@ let hof_title_2 = hof_plots_2.append("text")
    .text("Hybrid Forces (F02)");
 
 
-let plot_outer_height = 200;
+let plot_outer_height = 180;
 let plot_margins = {
     top: 10, right: 30, bottom: 90, left: 40
 };
