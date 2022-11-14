@@ -89,6 +89,8 @@
       articles</i><d-cite bibtex-key="buck2022"></d-cite><d-cite bibtex-key="buck2021"></d-cite>
       <i>that describe how to compute these measures in more detail.</i></p>
 
+    <!-- <h1>Realtive Position Descriptors</h1> -->
+    <h2>Triangular Fuzzy Number Descriptor</h2>
     <p>Consider a pair of 2D boxes as shown in the interactive figure below. How would you describe
       the relative position of the red box with respect to the blue box? Suppose that the
       marked dot within each box represents the center of mass, which may not necessarily be
@@ -104,12 +106,25 @@
     <div id="fig-boxes-simple" class="l-body"></div>
     <script type="module" src="fig_boxes_simple.js"></script>
 
+    <h2>Histogram of Forces Descriptor</h2>
     <p>Another way we can describe the relative position between two objects is with
-      the histogram of forces. (More detail to come...)
+      the histogram of forces (HoF).<d-cite bibtex-key="matsakispascalRelationsSpatialesStructurelles1998"></d-cite><d-cite bibtex-key="matsakisNewWayRepresent1999"></d-cite><d-cite bibtex-key="matsakisLinguisticDescriptionRelative2001"></d-cite>.
+      A force histogram represents the strength of the proposition "Object A is in direction angle $$\theta$$ from Object B."
+      In the figure below, we show the histogram of constant forces (F0) and the histogram of gravitational forces (F2)
+      between the blue and red boxes. The F0 histogram uses a constant term when evaluating pairs of points from each object,
+      whereas the F2 histogram is inversely weighted by the distance between objects. The result is that the F2 histogram
+      is more sensitive to regions where the two objects are close together. Unfortunately, the F2 histogram is undefined
+      when the objects overlap. To workaround this, we can use a hybrid histogram (F02) that blends the F0 and F2 histograms
+      such that F02 is equivalent to F2 at far distances and F0 when the objects overlap.<d-cite bibtex-key="matsakispascalRelationsSpatialesStructurelles1998"></d-cite><d-cite bibtex-key="sjahputera2004object"></d-cite>
+    </p>
+    <p>In the figure below, you can switch between a vectorized version of the HoF that is quick to compute and two rasterized versions
+      that can utilize the hybrid force histogram approach.
     </p>
 
     <div id="fig-boxes-hof" class="l-body"></div>
     <script type="module" src="fig_boxes_hof.js"></script>
+
+    <h2>Comparing Relative Position Descriptors</h2>
 
     <p>Consider a pair of 2D boxes as shown in the figure below. How would you describe
       the relative position of the dark red box with respect to the dark blue box? In particular,

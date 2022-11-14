@@ -111,3 +111,67 @@
 @INPROCEEDINGS{buck2022,  author={Buck, Andrew R. and Anderson, Derek T. and Keller, James M. and Luke, Robert H. and Scott, Grant},  booktitle={2022 IEEE International Conference on Fuzzy Systems (FUZZ-IEEE)},   title={A Comparison of Relative Position Descriptors for 3D Objects},   year={2022},  doi={10.1109/FUZZ-IEEE55066.2022.9882693}}
 
 @INPROCEEDINGS{buck2021,  author={Buck, Andrew R. and Anderson, Derek T. and Keller, James M. and Luke, Robert H. and Scott, Grant},  booktitle={2021 IEEE International Conference on Fuzzy Systems (FUZZ-IEEE)},   title={A Fuzzy Spatial Relationship Graph for Point Clouds Using Bounding Boxes},   year={2021},  doi={10.1109/FUZZ45933.2021.9494462}}
+
+@phdthesis{matsakispascalRelationsSpatialesStructurelles1998,
+  title = {Relations spatiales structurelles et interprétation d'images},
+  author = {Matsakis, Pascal},
+  year = {1998},
+  address = {{Toulouse, France}},
+  school = {IRIT, Universite Paul Sabatier}
+}
+
+@phdthesis{sjahputera2004object,
+  title={Object registration in scene matching based on spatial relationships},
+  author={Sjahputera, Ozy},
+  year={2004},
+  school={University of Missouri-Columbia}
+}
+
+@article{matsakisNewWayRepresent1999,
+  title = {A New Way to Represent the Relative Position between Areal Objects},
+  author = {Matsakis, P. and Wendling, L.},
+  year = {1999},
+  month = jul,
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume = {21},
+  number = {7},
+  pages = {634--643},
+  issn = {1939-3539},
+  doi = {10.1109/34.777374},
+  abstract = {The fuzzy qualitative evaluation of directional spatial relationships (such as "to the right of", "to the south of...") between areal objects often relies on the computation of a histogram of angles, which is considered to provide a good representation of the relative position of an object with regard to another. In this paper, the notion of the histogram of forces is introduced. It generalizes and may supersede the histogram of angles. The objects (2D entities) are handled as longitudinal sections (1D entities), not as points (OD entities). It is thus possible to fully benefit from the power of integral calculus and, so, ensure rapid processing of raster data, as well as of vector data, explicitly considering both angular and metric information.},
+  keywords = {Calculus,Computer vision,Fuzzy set theory,Fuzzy sets,Histograms,Image recognition,Layout,Natural languages,Parameter extraction,Pattern recognition},
+  annotation = {ZSCC: 0000297}
+}
+
+@article{matsakisUseForceHistograms2004,
+  title = {The Use of Force Histograms for Affine-Invariant Relative Position Description},
+  author = {Matsakis, P. and Keller, J.M. and Sjahputera, O. and Marjamaa, J.},
+  year = {2004},
+  month = jan,
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume = {26},
+  number = {1},
+  pages = {1--18},
+  issn = {1939-3539},
+  doi = {10.1109/TPAMI.2004.1261075},
+  abstract = {Affine invariant descriptors have been widely used for recognition of objects regardless of their position, size, and orientation in space. Examples of color, texture, and shape descriptors abound in the literature. However, many tasks in computer vision require looking not only at single objects or regions in images but also at their spatial relationships. In an earlier work, we showed that the relative position of two objects can be quantitatively described by a histogram of forces. Here, we study how affine transformations affect this descriptor. The position of an object with respect to another changes when the objects are affine transformed. We analyze the link between: 1) the applied affinity, 2) the relative position before transformation (described through a force histogram), and 3) the relative position after transformation. We show that any two of these elements allow the third one to be recovered. Moreover, it is possible to determine whether (or how well) two relative positions are actually related through an affine transformation. If they are not, the affinity that best approximates the unknown transformation can be retrieved, and the quality of the approximation assessed.},
+  keywords = {Cameras,Computer vision,Histograms,Layout,Low pass filters,Object recognition,Robustness,Shape,Spline},
+  annotation = {ZSCC: 0000064}
+}
+
+
+@article{matsakisLinguisticDescriptionRelative2001,
+  title = {Linguistic Description of Relative Positions in Images},
+  author = {Matsakis, P. and Keller, J.M. and Wendling, L. and Marjamaa, J. and Sjahputera, O.},
+  year = {2001},
+  month = aug,
+  journal = {IEEE Transactions on Systems, Man, and Cybernetics, Part B (Cybernetics)},
+  volume = {31},
+  number = {4},
+  pages = {573--588},
+  issn = {1941-0492},
+  doi = {10.1109/3477.938261},
+  abstract = {Fuzzy set methods have been used to model and manage uncertainty in various aspects of image processing, pattern recognition, and computer vision. High-level computer vision applications hold a great potential for fuzzy set theory because of its links to natural language. Linguistic scene description, a language-based interpretation of regions and their relationships, is one such application that is starting to bear the fruits of fuzzy set theoretic involvement. In this paper, we are expanding on two earlier endeavors. We introduce new families of fuzzy directional relations that rely on the computation of histograms of forces. These families preserve important relative position properties. They provide inputs to a fuzzy rule base that produces logical linguistic descriptions along with assessments as to the validity of the descriptions. Each linguistic output uses hedges from a dictionary of about 30 adverbs and other terms that can be tailored to individual users. Excellent results from several synthetic and real image examples show the applicability of this approach.},
+  keywords = {Application software,Computer vision,Fuzzy set theory,Fuzzy sets,Histograms,Image processing,Layout,Natural languages,Pattern recognition,Uncertainty},
+  annotation = {ZSCC: 0000144}
+}
