@@ -3,11 +3,11 @@ import { make_figure } from "./fig_boxes.js";
 let config = {
     'b1': {
         x: [0.6, 0.7],
-        y: [0.15, 0.45],
+        y: [0.15, 0.5],
         color: '#3399ff'
     },
     'b2': {
-        x: [0.25, 0.45],
+        x: [0.3, 0.7],
         y: [0.7, 0.9],
         color: '#ff3333'
     },

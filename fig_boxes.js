@@ -2,19 +2,22 @@ function make_figure(figName, config = {}) {
 
 if (!('b1' in config)) {
     config['b1'] = {
-        x: [0.1, 0.4],
+        x: [0.1, 0.3],
         y: [0.1, 0.5],
         color: '#3399ff'
     };
 }
 if (!('b2' in config)) {
     config['b2'] = {
-        x: [0.3, 0.5],
-        y: [0.4, 0.8],
+        x: [0.25, 0.5],
+        y: [0.55, 0.9],
         color: '#ff3333'
     };
 }
 
+if (!('showTFN' in config)) {
+    config['showTFN'] = true;
+}
 if (!('showPair2' in config)) {
     config['showPair2'] = true;
 }
@@ -27,7 +30,9 @@ if (!('showHoF' in config)) {
 if (!('showMeasures' in config)) {
     config['showMeasures'] = true;
 }
-
+if (!('showCentroids' in config)) {
+    config['showCentroids'] = true;
+}
 
 console.log(figName, config);
 
@@ -166,11 +171,12 @@ let box_title = box_plots.append("text")
     .text("TFN-RPD");
 
 
-let mf_plots_x = d3.select(`div#${figName}`).append('svg')
+let mf_plots_x_svg = d3.select(`div#${figName}`).append('svg')
               .attr("width", half_width)
               .attr("height", mf_plot_outer_height)
-              .style("margin-bottom", mf_margin_bottom+'px')
-            .append("g")
+              .style("margin-bottom", mf_margin_bottom+'px');
+if (!config['showTFN']) { mf_plots_x_svg.style('display', 'none'); }
+let mf_plots_x = mf_plots_x_svg.append("g")
               .attr("transform", `translate(${mf_plot_margins.left}, ${mf_plot_margins.top})`);
 
 let mf_x_x = d3.scaleLinear()
@@ -193,11 +199,12 @@ let mf_xAxis_title_x = mf_plots_x.append("text")
    .text("X");
 
 
-let mf_plots_y = d3.select(`div#${figName}`).append('svg')
+let mf_plots_y_svg = d3.select(`div#${figName}`).append('svg')
               .attr("width", half_width)
               .attr("height", mf_plot_outer_height)
-              .style("margin-bottom", mf_margin_bottom+'px')
-            .append("g")
+              .style("margin-bottom", mf_margin_bottom+'px');
+if (!config['showTFN']) { mf_plots_y_svg.style('display', 'none'); }
+let mf_plots_y = mf_plots_y_svg.append("g")
               .attr("transform", `translate(${mf_plot_margins.left}, ${mf_plot_margins.top})`);
 
 let mf_x_y = d3.scaleLinear()
@@ -404,7 +411,8 @@ function hof(box2, box1) {
 let use_hof, use_vec_hof;
 if (config['showHoF']) {
     use_hof = true;
-    use_vec_hof = false;
+    use_vec_hof = true;
+    setVectorHoF();
 } else {
     use_hof = false;
     use_vec_hof = false;
@@ -420,7 +428,7 @@ function setVectorHoF(event) {
     numberDirections = 128;
     angleIncrement = 360/numberDirections;
     hof_title_2.text("Gravitational Forces (F2)");
-    computeStats();
+    // computeStats();
 }
 
 function setHighRes(event) {
@@ -436,7 +444,7 @@ function setHighRes(event) {
     canvas.setAttribute("height", height*canvas_resolution);
     context = canvas.getContext("2d", {'willReadFrequently': true});
     hof_title_2.text("Hybrid Forces (F02)");
-    computeStats();
+    // computeStats();
 }
 
 function setLowRes(event) {
@@ -452,33 +460,33 @@ function setLowRes(event) {
     canvas.setAttribute("height", height*canvas_resolution);
     context = canvas.getContext("2d", {'willReadFrequently': true});
     hof_title_2.text("Hybrid Forces (F02)");
-    computeStats();
+    // computeStats();
 }
 
 function setNoHoF(event) {
     use_hof = false;
     hof_plots_0_svg.style("display", "none");
     hof_plots_2_svg.style("display", "none");
-    computeStats();
+    // computeStats();
 }
 
 if (config['showHoF']) { 
-    let btn_no_hof = d3.select(`div#${figName}`).append('button')
-        .text('No HoF')
-        .style('margin', '5px')
-        .on('click', setNoHoF);
-    let btn_low_hof = d3.select(`div#${figName}`).append('button')
-        .text('Low Fidelity HoF')
-        .style('margin', '5px')
-        .on('click', setLowRes);
-    let btn_high_hof = d3.select(`div#${figName}`).append('button')
-        .text('High Fidelity HoF')
-        .style('margin', '5px')
-        .on('click', setHighRes);
+    // let btn_no_hof = d3.select(`div#${figName}`).append('button')
+    //     .text('No HoF')
+    //     .style('margin', '5px')
+    //     .on('click', function() {setNoHoF(); computeStats();} );
     let btn_vec_hof = d3.select(`div#${figName}`).append('button')
         .text('Vector HoF')
         .style('margin', '5px')
-        .on('click', setVectorHoF);
+        .on('click', function() {setVectorHoF(); computeStats();} );
+    let btn_low_hof = d3.select(`div#${figName}`).append('button')
+        .text('Low Fidelity HoF')
+        .style('margin', '5px')
+        .on('click', function() {setLowRes(); computeStats();} );
+    let btn_high_hof = d3.select(`div#${figName}`).append('button')
+        .text('High Fidelity HoF')
+        .style('margin', '5px')
+        .on('click', function() {setHighRes(); computeStats();} );
 }
 
 function computeHoFSim(hof1, hof2) {
@@ -760,21 +768,36 @@ function computeStats() {
         let hof_data_max_y_0, hof_data_max_y_2;
 
         if (use_hof) {
-            hof1 = hof(b1, b2);
-            hof2 = hof(b3, b4);
+            if (config['showPair2']) {
+                hof1 = hof(b1, b2);
+                hof2 = hof(b3, b4);
 
-            hof_data_f0 = [
-                {'f': hof1.f0, 'color': "#ff9900"},
-                {'f': hof2.f0, 'color': "#ffd699"}
-            ];
+                hof_data_f0 = [
+                    {'f': hof1.f0, 'color': "#ff9900"},
+                    {'f': hof2.f0, 'color': "#ffd699"}
+                ];
 
-            hof_data_f02 = [
-                {'f': hof1.f02, 'color': "#8000ff"},
-                {'f': hof2.f02, 'color': "#cc99ff"}
-            ];
+                hof_data_f02 = [
+                    {'f': hof1.f02, 'color': "#8000ff"},
+                    {'f': hof2.f02, 'color': "#cc99ff"}
+                ];
 
-            hof_data_max_y_0 = hof_data_f0.map(d => Math.max(...d.f)).reduce((acc, cur) => Math.max(acc, cur), -Infinity);
-            hof_data_max_y_2 = hof_data_f02.map(d => Math.max(...d.f)).reduce((acc, cur) => Math.max(acc, cur), -Infinity);
+                hof_data_max_y_0 = hof_data_f0.map(d => Math.max(...d.f)).reduce((acc, cur) => Math.max(acc, cur), -Infinity);
+                hof_data_max_y_2 = hof_data_f02.map(d => Math.max(...d.f)).reduce((acc, cur) => Math.max(acc, cur), -Infinity);
+            } else {
+                hof1 = hof(b1, b2);
+    
+                hof_data_f0 = [
+                    {'f': hof1.f0, 'color': "#ff9900"}
+                ];
+    
+                hof_data_f02 = [
+                    {'f': hof1.f02, 'color': "#8000ff"}
+                ];
+    
+                hof_data_max_y_0 = hof_data_f0.map(d => Math.max(...d.f)).reduce((acc, cur) => Math.max(acc, cur), -Infinity);
+                hof_data_max_y_2 = hof_data_f02.map(d => Math.max(...d.f)).reduce((acc, cur) => Math.max(acc, cur), -Infinity);
+            }
         }
         else {
             hof_data_f0 = [
@@ -835,121 +858,124 @@ function computeStats() {
 
 
 
+        if (config['showPair2']) {
         
 
-        // let dmin = [d2.x[0] - d1.x[0], d2.y[0] - d1.y[0]];
-        // let smin = 1 / (Math.sqrt(dmin[0]**2 + dmin[1]**2) + 0.0001);
+            // let dmin = [d2.x[0] - d1.x[0], d2.y[0] - d1.y[0]];
+            // let smin = 1 / (Math.sqrt(dmin[0]**2 + dmin[1]**2) + 0.0001);
 
-        // let dmean = [d2.x[1] - d1.x[1], d2.y[1] - d1.y[1]];
-        // let smean = 1 / (Math.sqrt(dmean[0]**2 + dmean[1]**2) + 0.0001);
+            // let dmean = [d2.x[1] - d1.x[1], d2.y[1] - d1.y[1]];
+            // let smean = 1 / (Math.sqrt(dmean[0]**2 + dmean[1]**2) + 0.0001);
 
-        // let dmax = [d2.x[2] - d1.x[2], d2.y[2] - d1.y[2]];
-        // let smax = 1 / (Math.sqrt(dmax[0]**2 + dmax[1]**2) + 0.0001);
+            // let dmax = [d2.x[2] - d1.x[2], d2.y[2] - d1.y[2]];
+            // let smax = 1 / (Math.sqrt(dmax[0]**2 + dmax[1]**2) + 0.0001);
 
 
-        let samax_x = tnorm_max(d1.x, d2.x);
-        let samax_y = tnorm_max(d1.y, d2.y);
-        let samax_min = Math.min(samax_x, samax_y);
-        let samax_mean = 0.5 * (samax_x + samax_y);
+            let samax_x = tnorm_max(d1.x, d2.x);
+            let samax_y = tnorm_max(d1.y, d2.y);
+            let samax_min = Math.min(samax_x, samax_y);
+            let samax_mean = 0.5 * (samax_x + samax_y);
 
-        let saiou_x = tnorm_iou(d1.x, d2.x);
-        let saiou_y = tnorm_iou(d1.y, d2.y);
-        let saiou_min = Math.min(saiou_x, saiou_y);
-        let saiou_mean = 0.5 * (saiou_x + saiou_y);
+            let saiou_x = tnorm_iou(d1.x, d2.x);
+            let saiou_y = tnorm_iou(d1.y, d2.y);
+            let saiou_min = Math.min(saiou_x, saiou_y);
+            let saiou_mean = 0.5 * (saiou_x + saiou_y);
 
-        let pdx = 0;
-        let pdy = 0;
-        for (let i = 0; i < 3; i++) {
-            pdx += Math.abs(d1.x[i]-d2.x[i])/(d1.x[2]-d1.x[0]+d2.x[2]-d2.x[0]);
-            pdy += Math.abs(d1.y[i]-d2.y[i])/(d1.y[2]-d1.y[0]+d2.y[2]-d2.y[0]);
+            let pdx = 0;
+            let pdy = 0;
+            for (let i = 0; i < 3; i++) {
+                pdx += Math.abs(d1.x[i]-d2.x[i])/(d1.x[2]-d1.x[0]+d2.x[2]-d2.x[0]);
+                pdy += Math.abs(d1.y[i]-d2.y[i])/(d1.y[2]-d1.y[0]+d2.y[2]-d2.y[0]);
+            }
+
+            let bbpd = 1 / (1 + pdx + pdy);
+
+            pdx = 1/(1+pdx);
+            pdy = 1/(1+pdy);
+
+            let pdmin = Math.min(pdx, pdy);
+            let pdmean = 0.5 * (pdx + pdy);
+
+
+            let x_int = [Math.max(d1.x[0], d2.x[0]), Math.min(d1.x[2], d2.x[2])]
+            let y_int = [Math.max(d1.y[0], d2.y[0]), Math.min(d1.y[2], d2.y[2])]
+            let interArea = Math.max(0, x_int[1] - x_int[0]) * Math.max(0, y_int[1] - y_int[0]);
+
+            let d1_area = (d1.x[2] - d1.x[0]) * (d1.y[2] - d1.y[0]);
+            let d2_area = (d2.x[2] - d2.x[0]) * (d2.y[2] - d2.y[0]);
+
+            let bbiou = interArea / (d1_area + d2_area - interArea);
+
+            let x_hull = [Math.min(d1.x[0], d2.x[0]), Math.max(d1.x[2], d2.x[2])];
+            let y_hull = [Math.min(d1.y[0], d2.y[0]), Math.max(d1.y[2], d2.y[2])];
+            let hullArea = (x_hull[1] - x_hull[0]) * (y_hull[1] - y_hull[0]);
+
+            let bbgiou = bbiou - (hullArea - d1_area - d2_area + interArea) / hullArea;
+
+            let bbmgiou = (bbgiou + 1) / 2;
+
+
+            // let bbpd = 0;
+            // for (let i = 0; i < 3; i++) {
+            //     bbpd += Math.abs(d1.x[i] - d2.x[i]) / (d1.x[2]-d1.x[0]+d2.x[2]-d2.x[0]);
+            //     bbpd += Math.abs(d1.y[i] - d2.y[i]);
+            // }
+            // bbpd = 1 / (1 + bbpd);
+
+            let data;
+            if (use_hof) {
+                let hofSim = computeHoFSim(hof1, hof2);
+                data = [
+                    {'name': 'TFN-SA-Min-Max', 'value': samax_min},
+                    {'name': 'TFN-SA-Min-IoU', 'value': saiou_min},
+                    {'name': 'TFN-SA-Min-PD', 'value': pdmin},
+                    {'name': 'TFN-SA-Mean-Max', 'value': samax_mean},
+                    {'name': 'TFN-SA-Mean-IoU', 'value': saiou_mean},
+                    {'name': 'TFN-SA-Mean-PD', 'value': pdmean},
+                    {'name': 'TFN-BB-IOU', 'value': bbiou},
+                    {'name': 'TFN-BB-GIOU', 'value': bbmgiou},
+                    {'name': 'TFN-BB-PD', 'value': bbpd},
+                    {'name': 'HOF-T', 'value': hofSim.t},
+                    {'name': 'HOF-P', 'value': hofSim.p},
+                    {'name': 'HOF-C', 'value': hofSim.cc}
+                ];
+            }
+            else {
+                data = [
+                    {'name': 'TFN-SA-Min-Max', 'value': samax_min},
+                    {'name': 'TFN-SA-Min-IoU', 'value': saiou_min},
+                    {'name': 'TFN-SA-Min-PD', 'value': pdmin},
+                    {'name': 'TFN-SA-Mean-Max', 'value': samax_mean},
+                    {'name': 'TFN-SA-Mean-IoU', 'value': saiou_mean},
+                    {'name': 'TFN-SA-Mean-PD', 'value': pdmean},
+                    {'name': 'TFN-BB-IOU', 'value': bbiou},
+                    {'name': 'TFN-BB-GIOU', 'value': bbmgiou},
+                    {'name': 'TFN-BB-PD', 'value': bbpd}
+                ];
+            }
+            x.domain(data.map(d => d.name));
+            xAxis.call(d3.axisBottom(x))
+                .selectAll("text")
+                .attr("y", 15)
+                .attr("x", 0)
+                .attr("dy", ".35em")
+                .attr("transform", "rotate(-30)")
+                .style("text-anchor", "end");
+
+            // y.domain([d3.min(data, d => d.value), d3.max(data, d => d.value)]);
+            y.domain([0, 1]);
+            yAxis.transition().call(d3.axisLeft(y).ticks(5));
+
+            plots.selectAll("rect")
+                .data(data)
+                .join("rect")
+                .attr("x", d => x(d.name))
+                .attr("y", d => y(d.value))
+                .attr("width", d => x.bandwidth())
+                .attr("height", d => plot_height - y(d.value))
+                .attr("fill", "steelblue");
+
         }
-
-        let bbpd = 1 / (1 + pdx + pdy);
-
-        pdx = 1/(1+pdx);
-        pdy = 1/(1+pdy);
-
-        let pdmin = Math.min(pdx, pdy);
-        let pdmean = 0.5 * (pdx + pdy);
-
-
-        let x_int = [Math.max(d1.x[0], d2.x[0]), Math.min(d1.x[2], d2.x[2])]
-        let y_int = [Math.max(d1.y[0], d2.y[0]), Math.min(d1.y[2], d2.y[2])]
-        let interArea = Math.max(0, x_int[1] - x_int[0]) * Math.max(0, y_int[1] - y_int[0]);
-
-        let d1_area = (d1.x[2] - d1.x[0]) * (d1.y[2] - d1.y[0]);
-        let d2_area = (d2.x[2] - d2.x[0]) * (d2.y[2] - d2.y[0]);
-
-        let bbiou = interArea / (d1_area + d2_area - interArea);
-
-        let x_hull = [Math.min(d1.x[0], d2.x[0]), Math.max(d1.x[2], d2.x[2])];
-        let y_hull = [Math.min(d1.y[0], d2.y[0]), Math.max(d1.y[2], d2.y[2])];
-        let hullArea = (x_hull[1] - x_hull[0]) * (y_hull[1] - y_hull[0]);
-
-        let bbgiou = bbiou - (hullArea - d1_area - d2_area + interArea) / hullArea;
-
-        let bbmgiou = (bbgiou + 1) / 2;
-
-
-        // let bbpd = 0;
-        // for (let i = 0; i < 3; i++) {
-        //     bbpd += Math.abs(d1.x[i] - d2.x[i]) / (d1.x[2]-d1.x[0]+d2.x[2]-d2.x[0]);
-        //     bbpd += Math.abs(d1.y[i] - d2.y[i]);
-        // }
-        // bbpd = 1 / (1 + bbpd);
-
-        let data;
-        if (use_hof) {
-            let hofSim = computeHoFSim(hof1, hof2);
-            data = [
-                {'name': 'TFN-SA-Min-Max', 'value': samax_min},
-                {'name': 'TFN-SA-Min-IoU', 'value': saiou_min},
-                {'name': 'TFN-SA-Min-PD', 'value': pdmin},
-                {'name': 'TFN-SA-Mean-Max', 'value': samax_mean},
-                {'name': 'TFN-SA-Mean-IoU', 'value': saiou_mean},
-                {'name': 'TFN-SA-Mean-PD', 'value': pdmean},
-                {'name': 'TFN-BB-IOU', 'value': bbiou},
-                {'name': 'TFN-BB-GIOU', 'value': bbmgiou},
-                {'name': 'TFN-BB-PD', 'value': bbpd},
-                {'name': 'HOF-T', 'value': hofSim.t},
-                {'name': 'HOF-P', 'value': hofSim.p},
-                {'name': 'HOF-C', 'value': hofSim.cc}
-            ];
-        }
-        else {
-            data = [
-                {'name': 'TFN-SA-Min-Max', 'value': samax_min},
-                {'name': 'TFN-SA-Min-IoU', 'value': saiou_min},
-                {'name': 'TFN-SA-Min-PD', 'value': pdmin},
-                {'name': 'TFN-SA-Mean-Max', 'value': samax_mean},
-                {'name': 'TFN-SA-Mean-IoU', 'value': saiou_mean},
-                {'name': 'TFN-SA-Mean-PD', 'value': pdmean},
-                {'name': 'TFN-BB-IOU', 'value': bbiou},
-                {'name': 'TFN-BB-GIOU', 'value': bbmgiou},
-                {'name': 'TFN-BB-PD', 'value': bbpd}
-            ];
-        }
-        x.domain(data.map(d => d.name));
-        xAxis.call(d3.axisBottom(x))
-            .selectAll("text")
-            .attr("y", 15)
-            .attr("x", 0)
-            .attr("dy", ".35em")
-            .attr("transform", "rotate(-30)")
-            .style("text-anchor", "end");
-
-        // y.domain([d3.min(data, d => d.value), d3.max(data, d => d.value)]);
-        y.domain([0, 1]);
-        yAxis.transition().call(d3.axisLeft(y).ticks(5));
-
-        plots.selectAll("rect")
-            .data(data)
-            .join("rect")
-            .attr("x", d => x(d.name))
-            .attr("y", d => y(d.value))
-            .attr("width", d => x.bandwidth())
-            .attr("height", d => plot_height - y(d.value))
-            .attr("fill", "steelblue");
 
     }
     catch (error) {
@@ -1077,6 +1103,8 @@ function makeDraggableBox(box, show=true) {
         .attr('fill', box.color)
         .attr('stroke', 'rgba(0, 0, 0, 25%)')
         .call(d3.drag().on('drag', hcDrag));
+    
+    if (!config['showCentroids']) { hc.style('display', 'none'); }
     
     let ctrl = group.append('g')
         .attr('opacity', 0);

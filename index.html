@@ -89,10 +89,27 @@
       articles</i><d-cite bibtex-key="buck2022"></d-cite><d-cite bibtex-key="buck2021"></d-cite>
       <i>that describe how to compute these measures in more detail.</i></p>
 
-    <p>Take a look at the following figure.</p>
+    <p>Consider a pair of 2D boxes as shown in the interactive figure below. How would you describe
+      the relative position of the red box with respect to the blue box? Suppose that the
+      marked dot within each box represents the center of mass, which may not necessarily be
+      in the exact middle. One way to capture the spatial relationship between the two boxes
+      is to represent their positions on the X and Y axes as triangular fuzzy numbers (TFNs).
+      The minimum and maximum values of each TFN are the extents of the box along each axis,
+      and the peak value represents the centroid. Subtracting the blue TFN from the red TFN
+      gives a new relative position TFN shown in green. We can visualize the relative TFNs
+      from each axis as a box in 2D space. We call this the Triangular Fuzzy Number Relative
+      Position Descriptor (TFN-RPD), and it captures the minimum, maximum, and average
+      distance between two objects along both axes.</p>
 
     <div id="fig-boxes-simple" class="l-body"></div>
     <script type="module" src="fig_boxes_simple.js"></script>
+
+    <p>Another way we can describe the relative position between two objects is with
+      the histogram of forces. (More detail to come...)
+    </p>
+
+    <div id="fig-boxes-hof" class="l-body"></div>
+    <script type="module" src="fig_boxes_hof.js"></script>
 
     <p>Consider a pair of 2D boxes as shown in the figure below. How would you describe
       the relative position of the dark red box with respect to the dark blue box? In particular,
