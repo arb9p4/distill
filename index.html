@@ -102,6 +102,9 @@
       from each axis as a box in 2D space. We call this the Triangular Fuzzy Number Relative
       Position Descriptor (TFN-RPD), and it captures the minimum, maximum, and average
       distance between two objects along both axes.</p>
+    <p>In the figure below, you can adjust the shapes and positions of the red and blue boxes,
+      as well as the centroids, to observe the TFN-RPD changes of the red box with respect to the blue box.
+    </p>
 
     <div id="fig-boxes-simple" class="l-body"></div>
     <script type="module" src="fig_boxes_simple.js"></script>
@@ -109,16 +112,18 @@
     <h2>Histogram of Forces Descriptor</h2>
     <p>Another way we can describe the relative position between two objects is with
       the histogram of forces (HoF).<d-cite bibtex-key="matsakispascalRelationsSpatialesStructurelles1998"></d-cite><d-cite bibtex-key="matsakisNewWayRepresent1999"></d-cite><d-cite bibtex-key="matsakisLinguisticDescriptionRelative2001"></d-cite>.
-      A force histogram represents the strength of the proposition "Object A is in direction angle $$\theta$$ from Object B."
+      A force histogram represents the strength of the proposition "Object A is in direction $$\theta$$ from Object B."
       In the figure below, we show the histogram of constant forces (F0) and the histogram of gravitational forces (F2)
       between the blue and red boxes. The F0 histogram uses a constant term when evaluating pairs of points from each object,
       whereas the F2 histogram is inversely weighted by the distance between objects. The result is that the F2 histogram
       is more sensitive to regions where the two objects are close together. Unfortunately, the F2 histogram is undefined
       when the objects overlap. To workaround this, we can use a hybrid histogram (F02) that blends the F0 and F2 histograms
       such that F02 is equivalent to F2 at far distances and F0 when the objects overlap.<d-cite bibtex-key="matsakispascalRelationsSpatialesStructurelles1998"></d-cite><d-cite bibtex-key="sjahputera2004object"></d-cite>
+      Together, these two histograms make up the Histogram of Forces Relative Position Descriptor (HoF-RPD).
     </p>
-    <p>In the figure below, you can switch between a vectorized version of the HoF that is quick to compute and two rasterized versions
-      that can utilize the hybrid force histogram approach.
+    <p>In the figure below, you can move and resize the two boxes, and switch between a vectorized version of the HoF
+      that is quick to compute and two rasterized versions that can utilize the hybrid force histogram approach.
+      The histograms show the strength of the forces that support the red box being in direction $$\theta$$ from the blue box.
     </p>
 
     <div id="fig-boxes-hof" class="l-body"></div>
@@ -126,22 +131,64 @@
 
     <h2>Comparing Relative Position Descriptors</h2>
 
-    <p>Consider a pair of 2D boxes as shown in the figure below. How would you describe
-      the relative position of the dark red box with respect to the dark blue box? In particular,
-      is their spatial configuration similar to that of the light blue and red boxes? You can
-      drag the boxes around and resize them to see how different similarity measures evaluate
-      this question. We consider two approaches, one using triangular fuzzy numbers (TFN) and another
-      using histograms of forces (HoF). Note that in this example for the TFN methods, the
-      boxes are weighted with a center of mass that can be adjusted.
+    <p>We can use the TFN-RPD or the HoF-RPD to compare the spatial relationships between two pairs of objects.
+      Consider the relative position of the dark red box with respect to the dark blue box in the figure below.
+      How similar is it to that of the light blue and light red boxes? There are many ways to evaluate this,
+      some of which we compute here. For complete details, see our full article<d-cite bibtex-key="buck2022"></d-cite>.
     </p>
 
+    <h3>Single-Axis TFN Methods</h3>
+
+    <p>In these methods, we use the difference TFNs along the X and Y axes (shown in green).
+      The X and Y similarity measures can be combined with either their min or mean value.
+    </p>
+    <ul>
+      <li><b>TFN-SA-Min-Max, TFN-SA-Mean-Max:</b></br>Similarity is defined as the maximum of the intersection area between the two TFNs.</li>
+      <li><b>TFN-SA-Min-IoU, TFN-SA-Mean-IoU:</b></br>Similarity is defined as the intersection over union measure of the two TFNs.</li>
+      <li><b>TFN-SA-Min-PD, TFN-SA-Mean-PD:</b></br>Similarity is defined as the percent difference between the endpoints and centers of the two TFNs.</li>
+    </ul>
+
+    <h3>Bounding Box TFN Methods</h3>
+
+    <p>In these methods, the 2D bounding boxes formed by the difference TFNs (shown in green) are used directly,
+      so there is no need to combine the individual axis measures with the min or mean.
+    </p>
+    <ul>
+      <li><b>TFN-BB-IoU:</b></br>Similarity is defined as the intersection over union of the two TFN bounding boxes.</li>
+      <li><b>TFN-BB-GIoU:</b></br>Similarity is defined as the generalized intersection over union measure of the two TFN bounding boxes.<d-cite bibtex-key="giouPaper"></d-cite></li>
+      <li><b>TFN-BB-PD:</b></br>Similarity is defined as the percent difference between the corner points and centers of the two TFN bounding boxes.</li>
+    </ul>
+
+    <h3>Histogram of Forces Methods</h3>
+
+    <p>In these methods, the histograms of constant and gravitational (or hybrid) forces are compared using one of the three following similarity measures.</p>
+    <ul>
+      <li><b>HOF-T:</b></br>Similarity is defined as a Tversky index.
+        <d-math block>
+          \mu_T(h_1, h_2) = \frac{\sum_{\theta}\min(h_1(\theta), h_2(\theta))}{\sum_{\theta}\max(h_1(\theta), h_2(\theta))}
+        </d-math></li>
+      <li><b>HOF-P:</b></br>Similarity is defined as a Pappis' measure.
+        <d-math block>
+          \mu_P(h_1, h_2) = 1 - \frac{\sum_{\theta}|h_1(\theta) - h_2(\theta)|}{\sum_{\theta}|h_1(\theta) + h_2(\theta)|}
+        </d-math></li>
+      <li><b>HOF-C:</b></br>Similarity is defined as the normalized cross-correlation.
+        <d-math block>
+          \mu_C(h_1, h_2) = \frac{\sum_{\theta}h_1(\theta)h_2(\theta)}{\sqrt{\sum_{\theta}h_1^2(\theta)}\sqrt{\sum_{\theta}h_2^2(\theta)}}
+        </d-math></li>
+    </ul>
+
+    <p>In the figure below, you can adjust the shapes and positions of the boxes and their centroids.
+      The TFN-RPDs and HoF-RPDs are shown for the relationships between the dark red and blue boxes
+      and the light red and blue boxes. Several similarity measures are computed to evaluate How
+      similar the dark pair of boxes is to the light pair.</p>
 
     <div id="fig-boxes-full" class="l-body"></div>
     <script type="module" src="fig_boxes_full.js"></script>
 
     <p>The TFN methods are simple to compute, however the HoF approach is more computationally
-      demanding. Use the buttons above to adjust the quality of the HoF calculation or to
-      turn it off completely to improve performance.
+      demanding. Depending on the intended application, some measures may be more appropriate than others.
+      Note how some measures are quick to drop to zero when the object pairs are not well aligned,
+      whereas other measures maintain positive values regardless of the positions of the objects.
     </p>
 
     <p>

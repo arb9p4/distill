@@ -932,8 +932,8 @@ function computeStats() {
                     {'name': 'TFN-SA-Mean-Max', 'value': samax_mean},
                     {'name': 'TFN-SA-Mean-IoU', 'value': saiou_mean},
                     {'name': 'TFN-SA-Mean-PD', 'value': pdmean},
-                    {'name': 'TFN-BB-IOU', 'value': bbiou},
-                    {'name': 'TFN-BB-GIOU', 'value': bbmgiou},
+                    {'name': 'TFN-BB-IoU', 'value': bbiou},
+                    {'name': 'TFN-BB-GIoU', 'value': bbmgiou},
                     {'name': 'TFN-BB-PD', 'value': bbpd},
                     {'name': 'HOF-T', 'value': hofSim.t},
                     {'name': 'HOF-P', 'value': hofSim.p},
@@ -948,8 +948,8 @@ function computeStats() {
                     {'name': 'TFN-SA-Mean-Max', 'value': samax_mean},
                     {'name': 'TFN-SA-Mean-IoU', 'value': saiou_mean},
                     {'name': 'TFN-SA-Mean-PD', 'value': pdmean},
-                    {'name': 'TFN-BB-IOU', 'value': bbiou},
-                    {'name': 'TFN-BB-GIOU', 'value': bbmgiou},
+                    {'name': 'TFN-BB-IoU', 'value': bbiou},
+                    {'name': 'TFN-BB-GIoU', 'value': bbmgiou},
                     {'name': 'TFN-BB-PD', 'value': bbpd}
                 ];
             }
