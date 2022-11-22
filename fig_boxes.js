@@ -478,14 +478,17 @@ if (config['showHoF']) {
     let btn_vec_hof = d3.select(`div#${figName}`).append('button')
         .text('Vector HoF')
         .style('margin', '5px')
+        .style('margin-bottom', '30px')
         .on('click', function() {setVectorHoF(); computeStats();} );
     let btn_low_hof = d3.select(`div#${figName}`).append('button')
         .text('Low Fidelity HoF')
         .style('margin', '5px')
+        .style('margin-bottom', '30px')
         .on('click', function() {setLowRes(); computeStats();} );
     let btn_high_hof = d3.select(`div#${figName}`).append('button')
         .text('High Fidelity HoF')
         .style('margin', '5px')
+        .style('margin-bottom', '30px')
         .on('click', function() {setHighRes(); computeStats();} );
 }
 
@@ -935,9 +938,9 @@ function computeStats() {
                     {'name': 'TFN-BB-IoU', 'value': bbiou},
                     {'name': 'TFN-BB-GIoU', 'value': bbmgiou},
                     {'name': 'TFN-BB-PD', 'value': bbpd},
-                    {'name': 'HOF-T', 'value': hofSim.t},
-                    {'name': 'HOF-P', 'value': hofSim.p},
-                    {'name': 'HOF-C', 'value': hofSim.cc}
+                    {'name': 'HoF-T', 'value': hofSim.t},
+                    {'name': 'HoF-P', 'value': hofSim.p},
+                    {'name': 'HoF-C', 'value': hofSim.cc}
                 ];
             }
             else {

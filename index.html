@@ -94,7 +94,7 @@
     <p>Consider a pair of 2D boxes as shown in the interactive figure below. How would you describe
       the relative position of the red box with respect to the blue box? Suppose that the
       marked dot within each box represents the center of mass, which may not necessarily be
-      in the exact middle. One way to capture the spatial relationship between the two boxes
+      in the exact middle of the object. One way to capture the spatial relationship between the two boxes
       is to represent their positions on the X and Y axes as triangular fuzzy numbers (TFNs).
       The minimum and maximum values of each TFN are the extents of the box along each axis,
       and the peak value represents the centroid. Subtracting the blue TFN from the red TFN
@@ -113,12 +113,12 @@
     <p>Another way we can describe the relative position between two objects is with
       the histogram of forces (HoF).<d-cite bibtex-key="matsakispascalRelationsSpatialesStructurelles1998"></d-cite><d-cite bibtex-key="matsakisNewWayRepresent1999"></d-cite><d-cite bibtex-key="matsakisLinguisticDescriptionRelative2001"></d-cite>.
       A force histogram represents the strength of the proposition "Object A is in direction $$\theta$$ from Object B."
-      In the figure below, we show the histogram of constant forces (F0) and the histogram of gravitational forces (F2)
-      between the blue and red boxes. The F0 histogram uses a constant term when evaluating pairs of points from each object,
-      whereas the F2 histogram is inversely weighted by the distance between objects. The result is that the F2 histogram
-      is more sensitive to regions where the two objects are close together. Unfortunately, the F2 histogram is undefined
-      when the objects overlap. To workaround this, we can use a hybrid histogram (F02) that blends the F0 and F2 histograms
-      such that F02 is equivalent to F2 at far distances and F0 when the objects overlap.<d-cite bibtex-key="matsakispascalRelationsSpatialesStructurelles1998"></d-cite><d-cite bibtex-key="sjahputera2004object"></d-cite>
+      In the figure below, we show the histogram of constant forces ($$F_0$$) and the histogram of gravitational forces ($$F_2$$)
+      between the blue and red boxes. The $$F_0$$ histogram uses a constant term when evaluating pairs of points from each object,
+      whereas the $$F_2$$ histogram is inversely weighted by the distance between objects. The result is that the $$F_2$$ histogram
+      is more sensitive to regions where the two objects are close together. Unfortunately, the $$F_2$$ histogram is undefined
+      when the objects overlap. To workaround this, we can use a hybrid histogram ($$F_{02}$$) that blends the $$F_0$$ and $$F_2$$ histograms
+      such that $$F_{02}$$ is equivalent to $$F_2$$ at far distances and $$F_0$$ when the objects overlap.<d-cite bibtex-key="matsakispascalRelationsSpatialesStructurelles1998"></d-cite><d-cite bibtex-key="sjahputera2004object"></d-cite>
       Together, these two histograms make up the Histogram of Forces Relative Position Descriptor (HoF-RPD).
     </p>
     <p>In the figure below, you can move and resize the two boxes, and switch between a vectorized version of the HoF
@@ -139,13 +139,43 @@
 
     <h3>Single-Axis TFN Methods</h3>
 
-    <p>In these methods, we use the difference TFNs along the X and Y axes (shown in green).
-      The X and Y similarity measures can be combined with either their min or mean value.
+    <p>In these methods, we use the difference TFNs along the X and Y axes (shown in green). Assuming the position of
+      the blue box is given by the TFNs $$A_x$$ and $$A_y$$, and the position of the red box is given by $$B_x$$ and $$B_y$$,
+      the difference TFNs are defined as</p>
+    <p style="margin-left: 15px">
+      $$D_x = B_x - A_x$$ </br>
+      $$D_y = B_y - A_y$$
+    </p>
+    <p>
+      The X and Y similarity measures can be combined with either the min or mean value.
+    </p>
+    <p style="margin-left: 15px">
+      $$\mathrm{TFN\text{--}SA\text{--}Min\text{--}\mu} = \min(S_\mu^X, S_\mu^Y)$$ </br>
+      $$\mathrm{TFN\text{--}SA\text{--}Mean\text{--}\mu} = \frac{1}{2}(S_\mu^X + S_\mu^Y)$$
     </p>
     <ul>
-      <li><b>TFN-SA-Min-Max, TFN-SA-Mean-Max:</b></br>Similarity is defined as the maximum of the intersection area between the two TFNs.</li>
-      <li><b>TFN-SA-Min-IoU, TFN-SA-Mean-IoU:</b></br>Similarity is defined as the intersection over union measure of the two TFNs.</li>
-      <li><b>TFN-SA-Min-PD, TFN-SA-Mean-PD:</b></br>Similarity is defined as the percent difference between the endpoints and centers of the two TFNs.</li>
+      <li><b>TFN-SA-Min-Max, TFN-SA-Mean-Max:</b></br>
+        Similarity is defined as the maximum of the intersection area between the two TFNs.
+        <d-math block>
+          \mu_{\mathrm{max}}(D, D') = \max_{x \in \mathbb{R}} \bigg\{ \min\big(D(x), D'(x) \big) \bigg\}
+        </d-math>
+      </li>
+      <li><b>TFN-SA-Min-IoU, TFN-SA-Mean-IoU:</b></br>
+        Similarity is defined as the intersection over union measure of the two TFNs.
+        <d-math block>
+          \mu_{\mathrm{IoU}}(D, D') = \frac{|D \cap D'|}{|D \cup D'|}
+        </d-math>
+      </li>
+      <li><b>TFN-SA-Min-PD, TFN-SA-Mean-PD:</b></br>
+        Similarity is defined as the percent difference between the endpoints and centers of the two TFNs,
+        $$D = (d_1, d_2, d_3)$$ and $$D' = (d_1', d_2', d_3')$$.
+        <d-math block>
+          \mu_{\mathrm{PD}}(D, D') = \frac{1}{1 + PD(D, D')}
+        </d-math>
+        <d-math block>
+          PD(D, D') = \sum_{i=1}^3 \frac{|d_i - d_i'|} {d_3 - d_1 + d_3' -d_1'}
+        </d-math>
+      </li>
     </ul>
 
     <h3>Bounding Box TFN Methods</h3>
@@ -154,24 +184,45 @@
       so there is no need to combine the individual axis measures with the min or mean.
     </p>
     <ul>
-      <li><b>TFN-BB-IoU:</b></br>Similarity is defined as the intersection over union of the two TFN bounding boxes.</li>
-      <li><b>TFN-BB-GIoU:</b></br>Similarity is defined as the generalized intersection over union measure of the two TFN bounding boxes.<d-cite bibtex-key="giouPaper"></d-cite></li>
-      <li><b>TFN-BB-PD:</b></br>Similarity is defined as the percent difference between the corner points and centers of the two TFN bounding boxes.</li>
+      <li><b>TFN-BB-IoU:</b></br>
+        Similarity is defined as the intersection over union of the two TFN bounding boxes.
+        <d-math block>
+          \mu_{\mathrm{IoU}}(D, D') = \frac{|D \cap D'|}{|D \cup D'|}
+        </d-math>
+      </li>
+      <li><b>TFN-BB-GIoU:</b></br>
+        Similarity is defined as the generalized intersection over union measure of the two TFN bounding boxes.<d-cite bibtex-key="giouPaper"></d-cite>
+        Let $$C$$ be the convex hull of $$D$$ and $$D'$$. Then,
+        <d-math block>
+          \mu_{\mathrm{GIoU}}(D, D') = \frac{1}{2} \bigg( \frac{|D \cap D'|}{|D \cup D'|} - \frac{|C \setminus (D \cup D')|}{|C|} + 1 \bigg)
+        </d-math>
+      </li>
+      <li><b>TFN-BB-PD:</b></br>
+        Similarity is defined as the percent difference between the corner points and centers of the two TFN bounding boxes.
+        <d-math block>
+          \mu_{\mathrm{PD}}(D, D') = \frac{1}{1 + \sum_{j \in \{x, y\}}PD(D_j, D_j')}
+        </d-math>
+      </li>
     </ul>
 
     <h3>Histogram of Forces Methods</h3>
 
-    <p>In these methods, the histograms of constant and gravitational (or hybrid) forces are compared using one of the three following similarity measures.</p>
+    <p>In these methods, the histograms of constant and gravitational (or hybrid) forces are compared using one of the three following similarity measures.
+      The $$F_0$$ and $$F_2$$ histogram (or $$F_{02}$$) similarities are averaged into a combined measure. 
+    </p>
+    <d-math block>
+      \mathrm{HoF\text{--}\mu} = \tfrac{1}{2}\mu\big(F_0^{AB}, F_0^{A'B'}\big) + \tfrac{1}{2}\mu\big(F_2^{AB}, F_2^{A'B'}\big)
+    </d-math>
     <ul>
-      <li><b>HOF-T:</b></br>Similarity is defined as a Tversky index.
+      <li><b>HOF-T:</b></br>Similarity between histograms is defined as a Tversky index.
         <d-math block>
           \mu_T(h_1, h_2) = \frac{\sum_{\theta}\min(h_1(\theta), h_2(\theta))}{\sum_{\theta}\max(h_1(\theta), h_2(\theta))}
         </d-math></li>
-      <li><b>HOF-P:</b></br>Similarity is defined as a Pappis' measure.
+      <li><b>HOF-P:</b></br>Similarity between histograms is defined as a Pappis' measure.
         <d-math block>
           \mu_P(h_1, h_2) = 1 - \frac{\sum_{\theta}|h_1(\theta) - h_2(\theta)|}{\sum_{\theta}|h_1(\theta) + h_2(\theta)|}
         </d-math></li>
-      <li><b>HOF-C:</b></br>Similarity is defined as the normalized cross-correlation.
+      <li><b>HOF-C:</b></br>Similarity between histograms is defined as the normalized cross-correlation.
         <d-math block>
           \mu_C(h_1, h_2) = \frac{\sum_{\theta}h_1(\theta)h_2(\theta)}{\sqrt{\sum_{\theta}h_1^2(\theta)}\sqrt{\sum_{\theta}h_2^2(\theta)}}
         </d-math></li>
@@ -179,25 +230,28 @@
 
     <p>In the figure below, you can adjust the shapes and positions of the boxes and their centroids.
       The TFN-RPDs and HoF-RPDs are shown for the relationships between the dark red and blue boxes
-      and the light red and blue boxes. Several similarity measures are computed to evaluate How
+      and the light red and blue boxes. Several similarity measures are computed to evaluate how
       similar the dark pair of boxes is to the light pair.</p>
 
     <div id="fig-boxes-full" class="l-body"></div>
     <script type="module" src="fig_boxes_full.js"></script>
 
-    <p>The TFN methods are simple to compute, however the HoF approach is more computationally
+    <p>Each of the measures evaluates the similarity of the spatial relationships differently.
+      The TFN methods are simple to compute, however the HoF approach is more computationally
       demanding. Depending on the intended application, some measures may be more appropriate than others.
       Note how some measures are quick to drop to zero when the object pairs are not well aligned,
       whereas other measures maintain positive values regardless of the positions of the objects.
+      These are by no means the only ways to compute spatial similarity between objects, but they
+      demonstrate the variety of different approaches that one can consider.
     </p>
 
-    <p>
+    <!-- <p>
       <i>See the following temporary pages for more interactive examples:</i>
       <ul>
         <li><a href='demo1.html'>Demo 1</a></li>
         <li><a href='hof.html'>HoF Canvas</a></li>
       </ul>    
-    </p>
+    </p> -->
 
 
   </d-article>
