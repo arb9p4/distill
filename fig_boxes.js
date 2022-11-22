@@ -105,9 +105,9 @@ let b4 = {
 
 let svg = d3.select(`div#${figName}`).append('svg');
 
+svg.attr("width", width);
+svg.attr("height", height);
 svg.style("background-color", "#eee");
-svg.style("width", width);
-svg.style("height", height);
 svg.style("margin-bottom", '10px')
 
 // Clear the control handles when clicking on the background (mainly for mobile)
